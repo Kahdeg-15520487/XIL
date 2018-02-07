@@ -23,7 +23,6 @@ namespace XIL.Assembler {
 			this.instructionImplementations = instructionImplementations;
 		}
 
-
 		public CompileResult Compile(string sourcecode) {
 			Lexer lexer = new Lexer(sourcecode);
 			CodeGenerator codegen = new CodeGenerator();

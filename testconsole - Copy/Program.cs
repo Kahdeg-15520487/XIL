@@ -134,8 +134,8 @@ jump start
 			List<T> ret = new List<T>();
 			if (File.Exists(filename)) {
 				Type typeT = typeof(T);
-
-				Assembly assembly = Assembly.LoadFrom(filename);
+				
+				Assembly assembly = Assembly.Load(.LoadFrom(filename);
 				foreach (Type type in assembly.GetTypes()) {
 					if (!type.IsClass || type.IsNotPublic) continue;
 					if (typeT.IsAssignableFrom(type)) {
