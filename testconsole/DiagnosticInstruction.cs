@@ -6,17 +6,15 @@ using System.Text;
 using XIL.LangDef;
 using XIL.VM;
 
-namespace testconsole
-{
-    class DiagnosticInstruction : IInstructionImplementation
-    {
+namespace testconsole {
+	public class DiagnosticInstruction : IInstructionImplementation {
 		Stopwatch stopwatch = new Stopwatch();
 
 		/// <summary>
 		/// 
 		/// </summary>
-		[Instruction(0x40,"startclock")]
-		public void StartClock(Thread thread,int op1,int op2) {
+		[Instruction(0x40, "startclock")]
+		public void StartClock(Thread thread, int op1, int op2) {
 			stopwatch.Reset();
 			stopwatch.Start();
 		}
@@ -25,10 +23,10 @@ namespace testconsole
 		/// 
 		/// </summary>
 		[Instruction(0x41, "stopclock")]
-		public void StopClock(Thread thread,int op1,int op2) {
+		public void StopClock(Thread thread, int op1, int op2) {
 			stopwatch.Stop();
 			int result = stopwatch.Elapsed.Milliseconds;
 			thread.Push(result);
 		}
-    }
+	}
 }

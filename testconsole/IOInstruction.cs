@@ -7,7 +7,7 @@ using XIL.LangDef;
 using XIL.VM;
 
 namespace testconsole {
-	class IOInstruction : IInstructionImplementation {
+	public class IOInstruction : IInstructionImplementation {
 		/// <summary>
 		/// print <para/>
 		/// print the tots to the console

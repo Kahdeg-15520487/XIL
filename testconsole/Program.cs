@@ -14,6 +14,7 @@ namespace testconsole {
 		public static BuiltinInstruction builtinInstruction = new BuiltinInstruction();
 		public static IOInstruction ioInstruction = new IOInstruction();
 		public static DiagnosticInstruction diagnosticInstruction = new DiagnosticInstruction();
+		static string LOCAL_ROOT = AppDomain.CurrentDomain.BaseDirectory;
 
 		public static int run(CommandLineArguments arg) {
 			return CommandLine.Run<Run>(arg, "run");
@@ -35,17 +36,8 @@ namespace testconsole {
 
 		static int Main(string[] args) {
 			//test load from external assemblies IInstructionImplementation
+			Libs = GetDirectoryPlugins<IInstructionImplementation>(LOCAL_ROOT);
 
-
-			return 0;
-
-			//test commandline 
-			if (Libs is null) {
-				Libs = new List<IInstructionImplementation> {
-					builtinInstruction,
-					ioInstruction
-				};
-			}
 			var exitCode = CommandLine.Run<Program>(new CommandLineArguments(args), defaultCommandName: "help");
 			Console.ReadLine();
 			return exitCode;
@@ -143,6 +135,17 @@ jump start
 						ret.Add(plugin);
 					}
 				}
+			}
+			return ret;
+		}
+
+
+		public static List<T> GetDirectoryPlugins<T>(string dirname) {
+			List<T> ret = new List<T>();
+			string[] dlls = Directory.EnumerateFiles(dirname).Where(x => x.EndsWith(".dll") || x.EndsWith(".exe")).ToArray();
+			foreach (string dll in dlls) {
+				List<T> dll_plugins = GetFilePlugins<T>(Path.GetFullPath(dll));
+				ret.AddRange(dll_plugins);
 			}
 			return ret;
 		}

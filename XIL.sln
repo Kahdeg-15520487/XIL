@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testconsole", "testconsole\testconsole.csproj", "{FF0C9737-F1E0-4CC3-97F6-81D1B0821706}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XIL", "XIL\XIL.csproj", "{C586F7FA-38C9-47CB-A1A8-AA720D978E2F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XIL", "XIL\XIL.csproj", "{5941AED4-7129-4BB8-AF41-3FF3DCAC7401}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{FF0C9737-F1E0-4CC3-97F6-81D1B0821706}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF0C9737-F1E0-4CC3-97F6-81D1B0821706}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF0C9737-F1E0-4CC3-97F6-81D1B0821706}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C586F7FA-38C9-47CB-A1A8-AA720D978E2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C586F7FA-38C9-47CB-A1A8-AA720D978E2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C586F7FA-38C9-47CB-A1A8-AA720D978E2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C586F7FA-38C9-47CB-A1A8-AA720D978E2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5941AED4-7129-4BB8-AF41-3FF3DCAC7401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5941AED4-7129-4BB8-AF41-3FF3DCAC7401}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5941AED4-7129-4BB8-AF41-3FF3DCAC7401}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5941AED4-7129-4BB8-AF41-3FF3DCAC7401}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

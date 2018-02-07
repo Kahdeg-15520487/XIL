@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XIL\XIL.csproj">
-      <Project>{c586f7fa-38c9-47cb-a1a8-aa720d978e2f}</Project>
+      <Project>{5941aed4-7129-4bb8-af41-3ff3dcac7401}</Project>
       <Name>XIL</Name>
     </ProjectReference>
   </ItemGroup>

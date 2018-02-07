@@ -34,7 +34,7 @@ namespace testconsole {
 			try {
 				binary = File.ReadAllBytes(filename);
 				foreach (var b in binary) {
-					
+
 				}
 			}
 			catch (Exception e) {

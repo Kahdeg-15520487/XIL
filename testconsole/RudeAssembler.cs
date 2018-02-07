@@ -5,10 +5,8 @@ using System.Text;
 using XIL.LangDef;
 using XIL.VM;
 
-namespace testconsole
-{
-    class RudeAssembler
-    {
+namespace testconsole {
+	class RudeAssembler {
 		public int[] Assemble(List<Instruction> prog) {
 			List<int> result = new List<int>();
 			Dictionary<string, int> labels = new Dictionary<string, int>();
@@ -19,5 +17,5 @@ namespace testconsole
 
 			return result.ToArray();
 		}
-    }
+	}
 }
