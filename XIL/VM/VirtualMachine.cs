@@ -86,7 +86,7 @@ namespace XIL.VM {
 		}
 
 		private Instruction FetchInstruction(Thread thread) {
-			if (thread.currentInstruction == thread.instructionCount) {
+			if (thread.currentInstruction == thread.InstructionCount) {
 				thread.EndExecution();
 				return Instruction.Exit;
 			}

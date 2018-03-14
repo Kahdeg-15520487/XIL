@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>testconsole</RootNamespace>
     <AssemblyName>testconsole</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XIL\XIL.csproj">
-      <Project>{5941aed4-7129-4bb8-af41-3ff3dcac7401}</Project>
+      <Project>{49c4f774-57ec-4129-b0f0-f1926fa95d59}</Project>
       <Name>XIL</Name>
     </ProjectReference>
   </ItemGroup>

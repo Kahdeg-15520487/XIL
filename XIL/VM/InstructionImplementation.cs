@@ -1,11 +1,12 @@
 ﻿using XIL.LangDef;
 
-namespace XIL.VM {
+namespace XIL.VM
+{
 
-	//instruction delegate
-	public delegate void InstructionAction(Thread thread, int operand1, int operand2);
+    //instruction delegate
+    public delegate void InstructionAction(Thread thread, int operand1, int operand2);
 
-	public sealed class BuiltinInstruction : IInstructionImplementation
+    public sealed class BuiltinInstruction : IInstructionImplementation
     {
         #region flow control
         /// <summary>
@@ -344,7 +345,8 @@ namespace XIL.VM {
         [Instruction(InstructionOPCode.call, "call")]
         public void Call(Thread thread, int operand1, int operand2)
         {
-
+            thread.PushF(thread.currentInstruction);
+            thread.currentInstruction = operand1;
         }
 
         /// <summary>
@@ -354,7 +356,14 @@ namespace XIL.VM {
         [Instruction(InstructionOPCode.ret, "ret")]
         public void Return(Thread thread, int operand1, int operand2)
         {
-
+            if (thread.CurrentFStack == 0)
+            {
+                thread.EndExecution();
+            }
+            else
+            {
+                thread.currentInstruction = thread.PopF();
+            }
         }
 
         #endregion
@@ -371,34 +380,36 @@ namespace XIL.VM {
             thread.Push(result);
         }
 
-		/// <summary>
-		/// randmax &lt;max&gt; <para />
-		/// push a random value on tots
-		/// </summary>
-		[Instruction(InstructionOPCode.randmax, "randmax")]
-		public void RandomMax(Thread thread, int operand1, int operand2) {
-			int result = VirtualMachine.randomNumberGenerator.Next(operand1);
-			thread.Push(result);
-		}
+        /// <summary>
+        /// randmax &lt;max&gt; <para />
+        /// push a random value on tots
+        /// </summary>
+        [Instruction(InstructionOPCode.randmax, "randmax")]
+        public void RandomMax(Thread thread, int operand1, int operand2)
+        {
+            int result = VirtualMachine.randomNumberGenerator.Next(operand1);
+            thread.Push(result);
+        }
 
-		/// <summary>
-		/// nop <para />
-		/// do nothing
-		/// </summary>
-		[Instruction(InstructionOPCode.nop, "nop")]
+        /// <summary>
+        /// nop <para />
+        /// do nothing
+        /// </summary>
+        [Instruction(InstructionOPCode.nop, "nop")]
         public void Nooperation(Thread thread, int operand1, int operand2)
         {
 
         }
 
-		/// <summary>
-		/// breakpoint <para />
-		/// set breakpoint
-		/// </summary>
-		[Instruction(InstructionOPCode.brp, "brp")]
-		public void BreakPoint(Thread thread, int operand1, int operand2) {
-			//todo pause execution and print stack frame
-		}
-		#endregion
-	}
+        /// <summary>
+        /// breakpoint <para />
+        /// set breakpoint
+        /// </summary>
+        [Instruction(InstructionOPCode.brp, "brp")]
+        public void BreakPoint(Thread thread, int operand1, int operand2)
+        {
+            //todo pause execution and print stack frame
+        }
+        #endregion
+    }
 }

@@ -2,11 +2,11 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using XIL.VM;
 using XIL.Assembler;
 using XIL.LangDef;
-using System.Reflection;
 
 namespace testconsole {
 	class Program {
@@ -24,22 +24,25 @@ namespace testconsole {
 			return CommandLine.Run<Compile>(arg, "compile");
 		}
 
-		public static int loadlibrary(string[] paths = null) {
-			Console.WriteLine("load lib {0}", paths is null ? "null" : string.Join(", ", paths));
-			return 0;
-		}
-
 		public static int help() {
 			Console.WriteLine("halp");
 			return 0;
 		}
 
+		private static string ReadLine(string prompt = "") {
+			Console.Write(prompt);
+			return Console.ReadLine();
+		}
+
 		static int Main(string[] args) {
 			//test load from external assemblies IInstructionImplementation
 			Libs = GetDirectoryPlugins<IInstructionImplementation>(LOCAL_ROOT);
+			foreach (var lib in Libs) {
+				Console.WriteLine("Loaded {0}", lib.GetType().Name);
+			}
 
 			var exitCode = CommandLine.Run<Program>(new CommandLineArguments(args), defaultCommandName: "help");
-			Console.ReadLine();
+			ReadLine("Press enter to exit...");
 			return exitCode;
 
 			//test vm function

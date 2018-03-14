@@ -18,15 +18,16 @@ namespace XIL.VM
     {
         #region data and code
         Stack _stack;
+        Stack<int> _fstack;
         Instruction[] _instructions = null;
-		/// <summary>
-		/// instruction pointer
-		/// </summary>
+        /// <summary>
+        /// instruction pointer
+        /// </summary>
         public int currentInstruction = 0;
-		/// <summary>
-		/// program length
-		/// </summary>
-		public int instructionCount { get; private set; } = 0;
+        /// <summary>
+        /// program length
+        /// </summary>
+        public int InstructionCount { get; private set; } = 0;
         public int ExitCode = 0;
         public int returnJump = 0;
         public int FunctionReturn = 0;
@@ -55,6 +56,7 @@ namespace XIL.VM
         private void Init()
         {
             _stack = new Stack();
+            _fstack = new Stack<int>();
         }
 
         public void LoadInstructions(List<Instruction> instrs)
@@ -62,7 +64,7 @@ namespace XIL.VM
             _instructions = new Instruction[instrs.Count];
             instrs.CopyTo(_instructions);
             currentInstruction = 0;
-            instructionCount = _instructions.GetLength(0);
+            InstructionCount = _instructions.GetLength(0);
             IsRunning = true;
             IsDoneExecuting = false;
         }
@@ -73,9 +75,9 @@ namespace XIL.VM
         /// </summary>
         public bool IsStackEmpty => _stack.Top == 0;
 
-		/// <summary>
-		/// stack's top index
-		/// </summary>
+        /// <summary>
+        /// stack's top index
+        /// </summary>
         public int StackTopIndex => _stack.Top;
 
         /// <summary>
@@ -133,7 +135,7 @@ namespace XIL.VM
             else
             {
                 //todo relative stack index
-                
+
             }
         }
 
@@ -155,51 +157,67 @@ namespace XIL.VM
             }
         }
 
-		/// <summary>
-		/// push an array on tots
-		/// </summary>
-		/// <param name="array">the array to be pushed</param>
+        /// <summary>
+        /// push an array on tots
+        /// </summary>
+        /// <param name="array">the array to be pushed</param>
         public void PushArray(int[] array)
         {
             _stack.PushArray(array);
         }
 
-		/// <summary>
-		/// pop an array from tots
-		/// </summary>
-		/// <param name="arrayIndex">where does the array start</param>
-		/// <param name="arraySize">what is the array's size</param>
-		//todo implement array access 
-		/// <returns></returns>
-        public int[] PopArray(int arrayIndex,int arraySize)
+        /// <summary>
+        /// pop an array from tots
+        /// </summary>
+        /// <param name="arrayIndex">where does the array start</param>
+        /// <param name="arraySize">what is the array's size</param>
+        //todo implement array access 
+        /// <returns></returns>
+        public int[] PopArray(int arrayIndex, int arraySize)
         {
             return _stack.PopArray(arrayIndex, arraySize);
         }
 
-		/// <summary>
-		/// clear the stack
-		/// </summary>
+        /// <summary>
+        /// clear the stack
+        /// </summary>
         public void Clear()
         {
             _stack.Clear();
         }
-		#endregion
+        #endregion
 
-		#region instruction manipulation
-		/// <summary>
-		/// get an instruction at <paramref name="index"/>, will throw exception if using negative or out of range index
-		/// </summary>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		public Instruction this[int index] => _instructions[index];
+        #region fstack interface
+        public int CurrentFStack { get => _fstack.Count; }
+        public int PopF()
+        {
+            return _fstack.Pop();
+        }
+        public int PeekF()
+        {
+            return _fstack.Peek();
+        }
+        public void PushF(int f)
+        {
+            _fstack.Push(f);
+        }
+        #endregion
 
-		/// <summary>
-		/// fetch the next instruction and advance the instruction pointer
-		/// </summary>
-		/// <returns>the next instruction</returns>
+        #region instruction manipulation
+        /// <summary>
+        /// get an instruction at <paramref name="index"/>, will throw exception if using negative or out of range index
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public Instruction this[int index] => _instructions[index];
+
+        /// <summary>
+        /// fetch the next instruction and advance the instruction pointer
+        /// </summary>
+        /// <returns>the next instruction</returns>
         public Instruction FetchInstruction()
         {
-            if (currentInstruction == instructionCount)
+            if (currentInstruction == InstructionCount)
             {
                 EndExecution();
                 return Instruction.Nop;
@@ -210,22 +228,25 @@ namespace XIL.VM
             }
         }
 
-		public void AppendInstruction(Instruction instr) {
-			
-		}
+        public void AppendInstruction(Instruction instr)
+        {
 
-		public void SetInstruction(int index, Instruction instr) {
-			if (index > instructionCount -1) {
-				throw new IndexOutOfRangeException();
-			}
-			_instructions[index] = instr;
-		}
-		#endregion
+        }
 
-		/// <summary>
-		/// end this thread
-		/// </summary>
-		public void EndExecution()
+        public void SetInstruction(int index, Instruction instr)
+        {
+            if (index > InstructionCount - 1)
+            {
+                throw new IndexOutOfRangeException();
+            }
+            _instructions[index] = instr;
+        }
+        #endregion
+
+        /// <summary>
+        /// end this thread
+        /// </summary>
+        public void EndExecution()
         {
             IsRunning = false;
             IsDoneExecuting = true;

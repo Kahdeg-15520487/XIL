@@ -11,6 +11,7 @@
 		NEWLINE,//
 
 		INVALID,//invalid token
-		EOF
-	}
+		EOF,
+        ANY
+    }
 }
