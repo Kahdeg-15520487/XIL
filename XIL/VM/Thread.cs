@@ -188,15 +188,28 @@ namespace XIL.VM
         #endregion
 
         #region fstack interface
+        /// <summary>
+        /// Current function stack
+        /// </summary>
         public int CurrentFStack { get => _fstack.Count; }
+        /// <summary>
+        /// Pop a function return address from stack
+        /// </summary>
+        /// <returns></returns>
         public int PopF()
         {
             return _fstack.Pop();
         }
+        /// <summary>
+        /// Peek the top function return on stack
+        /// </summary>
         public int PeekF()
         {
             return _fstack.Peek();
         }
+        /// <summary>
+        /// Push a function returna ddress on stack
+        /// </summary>
         public void PushF(int f)
         {
             _fstack.Push(f);
