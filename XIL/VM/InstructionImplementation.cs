@@ -133,8 +133,8 @@ namespace XIL.VM
         [Instruction(InstructionOPCode.sub, "sub")]
         public void Substract(Thread thread, int operand1, int operand2)
         {
-            int op1 = thread.Pop();
             int op2 = thread.Pop();
+            int op1 = thread.Pop();
             int result = op1 - op2;
             thread.Push(result);
         }
@@ -159,8 +159,8 @@ namespace XIL.VM
         [Instruction(InstructionOPCode.div, "div")]
         public void Divide(Thread thread, int operand1, int operand2)
         {
-            int op1 = thread.Pop();
             int op2 = thread.Pop();
+            int op1 = thread.Pop();
             int result = op1 / op2;
             thread.Push(result);
         }
@@ -172,8 +172,8 @@ namespace XIL.VM
         [Instruction(InstructionOPCode.mod, "mod")]
         public void Modulus(Thread thread, int operand1, int operand2)
         {
-            int op1 = thread.Pop();
             int op2 = thread.Pop();
+            int op1 = thread.Pop();
             int result = op1 % op2;
             thread.Push(result);
         }
