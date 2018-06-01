@@ -5,7 +5,7 @@ using System.Text;
 
 namespace XIL.VM
 {
-    class Stack : ICollection
+    internal class Stack : ICollection<int>
     {
         int[] _stack;
         public readonly int Size;
@@ -16,6 +16,8 @@ namespace XIL.VM
         public bool IsSynchronized => false;
 
         public object SyncRoot => false;
+
+        public bool IsReadOnly => false;
 
         public int this[int index]
         {
@@ -118,6 +120,39 @@ namespace XIL.VM
         public IEnumerator GetEnumerator()
         {
             return _stack.GetEnumerator();
+        }
+
+        public void Add(int item)
+        {
+            
+        }
+
+        public bool Contains(int item)
+        {
+            for (int i = 0; i < Top; i++)
+            {
+                if (_stack[i] == item)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void CopyTo(int[] array, int arrayIndex)
+        {
+            //Array.Copy(_stack,)
+            _stack.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(int item)
+        {
+            return false;
+        }
+
+        IEnumerator<int> IEnumerable<int>.GetEnumerator()
+        {
+            return (IEnumerator<int>)_stack.GetEnumerator();
         }
     }
 }

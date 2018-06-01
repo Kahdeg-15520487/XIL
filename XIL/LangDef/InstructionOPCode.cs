@@ -181,6 +181,12 @@ namespace XIL.LangDef
 		/// brp <para />
 		/// break execution
 		/// </summary>
-		brp
-	}
+		brp,
+
+        /// <summary>
+        /// req &lt;library's name&gt; <para />
+        /// check VM for certain library
+        /// </summary>
+        req
+    }
 }

@@ -1,4 +1,7 @@
-﻿using XIL.LangDef;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using XIL.LangDef;
 
 namespace XIL.VM
 {
@@ -18,7 +21,7 @@ namespace XIL.VM
         /// jump lable <para />
         /// jump to the given label
         /// </summary>
-        [Instruction(InstructionOPCode.jmp, "jump")]
+        [Instruction(InstructionOPCode.jmp, "j")]
         public void Jump(Thread thread, int operand1, int operand2)
         {
             thread.currentInstruction = operand1;
@@ -414,6 +417,16 @@ namespace XIL.VM
         public void BreakPoint(Thread thread, int operand1, int operand2)
         {
             //todo pause execution and print stack frame
+            //print stack frame
+            Console.WriteLine("==Top of the stack==");
+            List<int> stack = new List<int>();
+            foreach (int st in thread._stack)
+            {
+                stack.Add(st);
+            }
+            Console.WriteLine("==Bottom of the stack==");
+            Console.WriteLine("Press enter to continue...");
+            Console.ReadLine();
         }
         #endregion
     }

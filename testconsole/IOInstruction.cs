@@ -52,14 +52,25 @@ namespace testconsole {
 			var result = Encode(Console.ReadLine());
 			thread.PushArray(result);
 			thread.Push(result.GetLength(0));
-		}
+        }
 
-		/// <summary>
-		/// decode a int array to string
-		/// </summary>
-		/// <param name="a">the array to be decode</param>
-		/// <returns>decoded string</returns>
-		public static string Decode(int[] a) {
+        /// <summary>
+        /// reads <para/>
+        /// will read a string from console, encode it to an int array and push it on tots
+        /// </summary>
+        [Instruction(0x34, "printc")]
+        public void PrintChar(Thread thread, int operand1, int operand2)
+        {
+            int op = thread.Pop();
+            Console.Write((char)op);
+        }
+
+        /// <summary>
+        /// decode a int array to string
+        /// </summary>
+        /// <param name="a">the array to be decode</param>
+        /// <returns>decoded string</returns>
+        public static string Decode(int[] a) {
 			StringBuilder result = new StringBuilder();
 			foreach (var b in a) {
 				result.Append(Encoding.ASCII.GetString(BitConverter.GetBytes(b)));

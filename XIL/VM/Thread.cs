@@ -17,7 +17,7 @@ namespace XIL.VM
     public class Thread
     {
         #region data and code
-        Stack _stack;
+        internal Stack _stack;
         Stack<int> _fstack;
         Instruction[] _instructions = null;
         /// <summary>
