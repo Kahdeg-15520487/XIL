@@ -208,7 +208,7 @@ namespace XIL.VM
             return _fstack.Peek();
         }
         /// <summary>
-        /// Push a function returna ddress on stack
+        /// Push a function return address on stack
         /// </summary>
         public void PushF(int f)
         {

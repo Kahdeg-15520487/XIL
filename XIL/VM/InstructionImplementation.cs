@@ -3,9 +3,14 @@
 namespace XIL.VM
 {
 
-    //instruction delegate
+    /// <summary>
+    /// instruction delegate
+    /// </summary>
     public delegate void InstructionAction(Thread thread, int operand1, int operand2);
 
+    /// <summary>
+    /// builtin instruction
+    /// </summary>
     public sealed class BuiltinInstruction : IInstructionImplementation
     {
         #region flow control

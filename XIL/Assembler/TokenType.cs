@@ -1,17 +1,51 @@
-﻿namespace XIL.Assembler {
-	public enum TokenType {
-		INT,    //signed int
-		STRING, //will get converted to intarr string
-		BOOL,   //true = 1, false = 0
+﻿namespace XIL.Assembler
+{
+    public enum TokenType
+    {
+        /// <summary>
+        /// signed int
+        /// </summary>
+		INT,
+        /// <summary>
+        /// will get converted to intarr string
+        /// </summary>
+        STRING,
+        /// <summary>
+        /// true = 1, false = 0
+        /// </summary>
+        BOOL,
 
-		VAR,  //variable
-		LABEL,	//label
-		IDENT,  //an instruction
+        /// <summary>
+        /// variable
+        /// </summary>
+        VAR,
+        /// <summary>
+        /// label
+        /// </summary>
+        LABEL,
+        /// <summary>
+        /// an instruction
+        /// </summary>
+        IDENT,
 
-		NEWLINE,//
+        /// <summary>
+        /// newline
+        /// </summary>
+        NEWLINE,
 
-		INVALID,//invalid token
-		EOF,
+        /// <summary>
+        /// invalid token
+        /// </summary>
+        INVALID,
+
+        /// <summary>
+        /// end of file
+        /// </summary>
+        EOF,
+
+        /// <summary>
+        /// match any token
+        /// </summary>
         ANY
     }
 }

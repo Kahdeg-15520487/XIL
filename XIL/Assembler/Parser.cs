@@ -88,6 +88,9 @@ namespace XIL.Assembler
             return output.ToString();
         }
 
+        /// <summary>
+        /// instruction = IDENT 
+        /// </summary>
         string instruction()
         {
             StringBuilder output = new StringBuilder();
