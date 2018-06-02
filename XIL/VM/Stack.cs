@@ -5,9 +5,9 @@ using System.Text;
 
 namespace XIL.VM
 {
-    internal class Stack : ICollection<int>
+    internal class Stack : ICollection
     {
-        int[] _stack;
+        int[] stack;
         public readonly int Size;
         public int Top { get; private set; }
 
@@ -21,13 +21,13 @@ namespace XIL.VM
 
         public int this[int index]
         {
-            get => _stack[index];
-            set { _stack[index] = value; }
+            get => stack[index];
+            set { stack[index] = value; }
         }
 
         public Stack(int stacksize = 1000)
         {
-            _stack = new int[stacksize];
+            stack = new int[stacksize];
             Size = stacksize;
             Top = 0;
         }
@@ -38,7 +38,7 @@ namespace XIL.VM
             {
                 throw new InvalidOperationException("Stack Empty");
             }
-            return _stack[--Top];
+            return stack[--Top];
         }
 
         public void Push(int value)
@@ -47,7 +47,7 @@ namespace XIL.VM
             {
                 throw new InvalidOperationException("Stack Full");
             }
-            _stack[Top++] = value;
+            stack[Top++] = value;
         }
 
         public int Peek()
@@ -56,7 +56,7 @@ namespace XIL.VM
             {
                 throw new InvalidOperationException("Stack Empty");
             }
-            return _stack[Top-1];
+            return stack[Top-1];
         }
 
         public void Set(int index, int value)
@@ -65,7 +65,7 @@ namespace XIL.VM
             {
                 throw new IndexOutOfRangeException();
             }
-            _stack[index] = value;
+            stack[index] = value;
         }
 
         public int Get(int index)
@@ -74,7 +74,7 @@ namespace XIL.VM
             {
                 throw new IndexOutOfRangeException();
             }
-            return _stack[index];
+            return stack[index];
         }
 
         public void PushArray(int[] array)
@@ -86,7 +86,7 @@ namespace XIL.VM
                 throw new InvalidOperationException("Stack full");
             }
 
-            Array.Copy(array, 0, _stack, Top, arraySize);
+            Array.Copy(array, 0, stack, Top, arraySize);
             Top += arraySize;
         }
 
@@ -103,7 +103,7 @@ namespace XIL.VM
             }
 
             int[] result = new int[arraySize];
-            Array.Copy(_stack, arrayIndex, result, 0, arraySize);
+            Array.Copy(stack, arrayIndex, result, 0, arraySize);
             return result;
         }
 
@@ -114,12 +114,12 @@ namespace XIL.VM
 
         public void CopyTo(Array array, int index)
         {
-            _stack.CopyTo(array, index);
+            stack.CopyTo(array, index);
         }
 
         public IEnumerator GetEnumerator()
         {
-            return _stack.GetEnumerator();
+            return stack.GetEnumerator();
         }
 
         public void Add(int item)
@@ -131,7 +131,7 @@ namespace XIL.VM
         {
             for (int i = 0; i < Top; i++)
             {
-                if (_stack[i] == item)
+                if (stack[i] == item)
                 {
                     return true;
                 }
@@ -142,7 +142,7 @@ namespace XIL.VM
         public void CopyTo(int[] array, int arrayIndex)
         {
             //Array.Copy(_stack,)
-            _stack.CopyTo(array, arrayIndex);
+            stack.CopyTo(array, arrayIndex);
         }
 
         public bool Remove(int item)
@@ -150,9 +150,17 @@ namespace XIL.VM
             return false;
         }
 
-        IEnumerator<int> IEnumerable<int>.GetEnumerator()
+        /// <summary>
+        /// get a snapshot of the stack
+        /// </summary>
+        public int[] SnapShot()
         {
-            return (IEnumerator<int>)_stack.GetEnumerator();
+            int[] snapshot = new int[Top];
+            for (int i = 0; i < Top; i++)
+            {
+                snapshot[i] = stack[i];
+            }
+            return snapshot;
         }
     }
 }

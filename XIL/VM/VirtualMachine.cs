@@ -9,7 +9,7 @@ namespace XIL.VM
 {
     public class VirtualMachine
     {
-        List<Thread> _threads;
+        List<Thread> threads;
         public static Dictionary<int, InstructionAction> instructionMap = null;
         public static List<string> loadedLibrary = null;
         public static Random randomNumberGenerator = null;
@@ -57,7 +57,7 @@ namespace XIL.VM
 
         private void Init()
         {
-            _threads = new List<Thread>();
+            threads = new List<Thread>();
 
             if (randomNumberGenerator != null)
             {
@@ -69,28 +69,22 @@ namespace XIL.VM
             LastStep = 0;
         }
 
-        public bool LoadProgram(List<Instruction> program)
+        public bool LoadProgram(Instruction[] instrs, string[] strs)
         {
-            if (!ValidateProgram(program))
+            if (!ValidateProgram(instrs))
             {
                 Console.WriteLine("Program contain undefined opcode");
                 return false;
             }
-            _threads.Add(new Thread(program));
+            threads.Add(new Thread(instrs, strs));
             exitcodes.Add(0);
             return true;
         }
 
-        public bool LoadProgram(int[] program)
-        {
-            var p = Instruction.Deserialize(program).ToList();
-            return LoadProgram(p);
-        }
-
-        private bool ValidateProgram(List<Instruction> program)
+        private bool ValidateProgram(Instruction[] instrs)
         {
             bool isOK = true;
-            foreach (var instr in program)
+            foreach (var instr in instrs)
             {
                 if (!instructionMap.ContainsKey(instr.opCode))
                 {
@@ -104,11 +98,11 @@ namespace XIL.VM
         private Thread GetNextThread()
         {
             currentThread++;
-            if (currentThread == _threads.Count)
+            if (currentThread == threads.Count)
             {
                 currentThread = 0;
             }
-            return _threads[currentThread];
+            return threads[currentThread];
         }
 
         private Instruction FetchInstruction(Thread thread)

@@ -48,6 +48,8 @@
   <ItemGroup>
     <Compile Include="Compile.cs" />
     <Compile Include="DiagnosticInstruction.cs" />
+    <Compile Include="FileInstruction.cs" />
+    <Compile Include="ForeignFunctionInstruction.cs" />
     <Compile Include="IOInstruction.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

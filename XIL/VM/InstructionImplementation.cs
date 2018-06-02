@@ -263,6 +263,33 @@ namespace XIL.VM
         }
 
         /// <summary>
+        /// gets <para />
+        /// push the content of the value at the stack index <para/>
+        /// which is on tots onto the tots
+        /// </summary>
+        [Instruction(InstructionOPCode.getstack, "gets")]
+        public void GetStack(Thread thread, int operand1, int operand2)
+        {
+            int stackIndex = thread.Pop();
+            int value = thread.Get(stackIndex);
+            thread.Push(value);
+        }
+
+        /// <summary>
+        /// sets <para />
+        /// set the content of the value at the stack index <para/>
+        /// which is on second tots to tots
+        /// </summary>
+        [Instruction(InstructionOPCode.setstack, "sets")]
+        public void SetStack(Thread thread, int operand1, int operand2)
+        {
+            int value = thread.Pop();
+            int stackIndex = thread.Pop();
+            thread.Set(stackIndex, value);
+        }
+
+
+        /// <summary>
         /// copy &lt;var1&gt; &lt;var2&gt; <para />
         /// copy value of &lt;var2&gt; into &lt;var1&gt;
         /// </summary>
@@ -295,6 +322,16 @@ namespace XIL.VM
             int op2 = thread.Pop();
             thread.Push(op1);
             thread.Push(op2);
+        }
+
+        /// <summary>
+        /// remove <para/>
+        /// remove tots
+        /// </summary>
+        [Instruction(InstructionOPCode.remove, "rm")]
+        public void Remove(Thread thread, int operand1, int operand2)
+        {
+            thread.Pop();
         }
 
         #endregion
@@ -418,11 +455,16 @@ namespace XIL.VM
         {
             //todo pause execution and print stack frame
             //print stack frame
-            Console.WriteLine("==Top of the stack==");
+            Console.WriteLine("== Top of the stack  ==");
             List<int> stack = new List<int>();
-            foreach (int st in thread._stack)
+            foreach (int st in thread.stack.SnapShot())
             {
                 stack.Add(st);
+            }
+            stack.Reverse();
+            for (int i = 0; i < stack.Count; i++)
+            {
+                Console.WriteLine("{1} {0}", stack[i], (stack.Count - 1 - i).ToString().PadRight(5));
             }
             Console.WriteLine("==Bottom of the stack==");
             Console.WriteLine("Press enter to continue...");

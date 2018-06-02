@@ -101,7 +101,8 @@ namespace XIL.Assembler
             var token = CurrentToken;
             output.Append(token.lexeme);
             Eat(TokenType.IDENT);
-
+            
+            //todo throw syntax error on unknown opcode
             opcode = instructionMap[token.lexeme];
 
             if (CurrentToken.tokenType != TokenType.EOF)
@@ -110,7 +111,7 @@ namespace XIL.Assembler
                 //output.Append(type_check(instr.opcode, instr));
             }
 
-            //do operands
+            //parse operands
             //parse op1
             if (CurrentToken.tokenType != TokenType.NEWLINE)
             {
@@ -122,6 +123,8 @@ namespace XIL.Assembler
                         break;
                     case TokenType.STRING:
                         //todo parse string constant
+                        Console.WriteLine(CurrentToken.lexeme);
+                        op1 = CodeGen.AddString(CurrentToken.lexeme);
                         Eat(TokenType.STRING);
                         break;
                     case TokenType.BOOL:
@@ -150,6 +153,8 @@ namespace XIL.Assembler
                         break;
                     case TokenType.STRING:
                         //todo parse string constant
+                        Console.WriteLine(CurrentToken.lexeme);
+                        op2 = CodeGen.AddString(CurrentToken.lexeme);
                         Eat(TokenType.STRING);
                         break;
                     case TokenType.BOOL:
@@ -170,7 +175,7 @@ namespace XIL.Assembler
 
             Eat(TokenType.NEWLINE);
 
-            CodeGen.AddInstruction(new Instruction(opcode, op1, op2));
+            CodeGen.AddInstruction(opcode, op1, op2);
             return output.ToString();
         }
 
@@ -185,6 +190,10 @@ namespace XIL.Assembler
                     case TokenType.LABEL:
                         output.AppendFormat("{1} : {0}", label(), InstructionCounter);
                         output.AppendLine();
+                        break;
+
+                    case TokenType.VAR:
+                        //todo parse variable declartion
                         break;
 
                     case TokenType.IDENT:

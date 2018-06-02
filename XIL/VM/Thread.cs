@@ -17,9 +17,10 @@ namespace XIL.VM
     public class Thread
     {
         #region data and code
-        internal Stack _stack;
-        Stack<int> _fstack;
-        Instruction[] _instructions = null;
+        internal Stack stack;
+        Stack<int> fstack;
+        Instruction[] instructions = null;
+        string[] stringTable = null;
         /// <summary>
         /// instruction pointer
         /// </summary>
@@ -35,7 +36,7 @@ namespace XIL.VM
 
         #region runtime info
         public readonly Priority priority = Priority.Normal;
-        public bool IsLoaded => _instructions != null;
+        public bool IsLoaded => instructions != null;
         public bool IsRunning { get; private set; } = false;
         public bool IsDoneExecuting { get; private set; } = false;
         #endregion
@@ -46,39 +47,48 @@ namespace XIL.VM
             Init();
         }
 
-        public Thread(List<Instruction> instrs, Priority priority = Priority.Normal)
+        public Thread(Instruction[] instrs, string[] strs, Priority priority = Priority.Normal)
         {
             this.priority = priority;
-            LoadInstructions(instrs);
+            LoadInstructions(instrs, strs);
             Init();
         }
 
         private void Init()
         {
-            _stack = new Stack();
-            _fstack = new Stack<int>();
+            stack = new Stack();
+            fstack = new Stack<int>();
         }
 
-        public void LoadInstructions(List<Instruction> instrs)
+        public void LoadInstructions(Instruction[] instrs, string[] strs)
         {
-            _instructions = new Instruction[instrs.Count];
-            instrs.CopyTo(_instructions);
+            instructions = new Instruction[instrs.Length];
+            Array.Copy(instrs, instructions, instrs.Length);
+
+            stringTable = new string[strs.Length];
+            Array.Copy(strs, stringTable, strs.Length);
+
             currentInstruction = 0;
-            InstructionCount = _instructions.GetLength(0);
+            InstructionCount = instructions.Length;
             IsRunning = true;
             IsDoneExecuting = false;
+        }
+
+        public string GetString(int index)
+        {
+            return index < stringTable.Length ? stringTable[index] : null;
         }
 
         #region stack interface
         /// <summary>
         /// Check if the stack is empty
         /// </summary>
-        public bool IsStackEmpty => _stack.Top == 0;
+        public bool IsStackEmpty => stack.Top == 0;
 
         /// <summary>
         /// stack's top index
         /// </summary>
-        public int StackTopIndex => _stack.Top;
+        public int StackTopIndex => stack.Top;
 
         /// <summary>
         /// Pop off tots and return it
@@ -86,11 +96,11 @@ namespace XIL.VM
         /// <returns>the poped value</returns>
         public int Pop()
         {
-            if (_stack.Top == 0)
+            if (stack.Top == 0)
             {
                 throw new InvalidOperationException("Stack Empty");
             }
-            return _stack.Pop();
+            return stack.Pop();
         }
 
         /// <summary>
@@ -100,12 +110,12 @@ namespace XIL.VM
         /// <returns>the pushed value</returns>
         public int Push(int value)
         {
-            if (_stack.Top == _stack.Size - 1)
+            if (stack.Top == stack.Size - 1)
             {
                 throw new InvalidOperationException("Stack Full");
             }
-            _stack.Push(value);
-            return _stack.Peek();
+            stack.Push(value);
+            return stack.Peek();
         }
 
         /// <summary>
@@ -114,11 +124,11 @@ namespace XIL.VM
         /// <returns>the value on tots</returns>
         public int Peek()
         {
-            if (_stack.Top == 0)
+            if (stack.Top == 0)
             {
                 throw new InvalidOperationException("Stack Empty");
             }
-            return _stack.Peek();
+            return stack.Peek();
         }
 
         /// <summary>
@@ -130,7 +140,7 @@ namespace XIL.VM
         {
             if (index >= 0)
             {
-                _stack.Set(index, value);
+                stack.Set(index, value);
             }
             else
             {
@@ -148,12 +158,12 @@ namespace XIL.VM
         {
             if (index >= 0)
             {
-                return _stack.Get(index);
+                return stack.Get(index);
             }
             else
             {
                 //todo relative stack index
-                return 0;
+                return stack.Get(stack.Top + index);
             }
         }
 
@@ -163,7 +173,7 @@ namespace XIL.VM
         /// <param name="array">the array to be pushed</param>
         public void PushArray(int[] array)
         {
-            _stack.PushArray(array);
+            stack.PushArray(array);
         }
 
         /// <summary>
@@ -175,7 +185,7 @@ namespace XIL.VM
         /// <returns></returns>
         public int[] PopArray(int arrayIndex, int arraySize)
         {
-            return _stack.PopArray(arrayIndex, arraySize);
+            return stack.PopArray(arrayIndex, arraySize);
         }
 
         /// <summary>
@@ -183,7 +193,7 @@ namespace XIL.VM
         /// </summary>
         public void Clear()
         {
-            _stack.Clear();
+            stack.Clear();
         }
         #endregion
 
@@ -191,28 +201,28 @@ namespace XIL.VM
         /// <summary>
         /// Current function stack
         /// </summary>
-        public int CurrentFStack { get => _fstack.Count; }
+        public int CurrentFStack { get => fstack.Count; }
         /// <summary>
         /// Pop a function return address from stack
         /// </summary>
         /// <returns></returns>
         public int PopF()
         {
-            return _fstack.Pop();
+            return fstack.Pop();
         }
         /// <summary>
         /// Peek the top function return on stack
         /// </summary>
         public int PeekF()
         {
-            return _fstack.Peek();
+            return fstack.Peek();
         }
         /// <summary>
         /// Push a function return address on stack
         /// </summary>
         public void PushF(int f)
         {
-            _fstack.Push(f);
+            fstack.Push(f);
         }
         #endregion
 
@@ -222,7 +232,7 @@ namespace XIL.VM
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public Instruction this[int index] => _instructions[index];
+        public Instruction this[int index] => instructions[index];
 
         /// <summary>
         /// fetch the next instruction and advance the instruction pointer
@@ -237,7 +247,7 @@ namespace XIL.VM
             }
             else
             {
-                return _instructions[currentInstruction++];
+                return instructions[currentInstruction++];
             }
         }
 
@@ -252,9 +262,17 @@ namespace XIL.VM
             {
                 throw new IndexOutOfRangeException();
             }
-            _instructions[index] = instr;
+            instructions[index] = instr;
         }
         #endregion
+
+        /// <summary>
+        /// pause this thread
+        /// </summary>
+        public void PauseExecution()
+        {
+            IsRunning = false;
+        }
 
         /// <summary>
         /// end this thread

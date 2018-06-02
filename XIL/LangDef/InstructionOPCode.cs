@@ -140,6 +140,18 @@ namespace XIL.LangDef
         /// </summary>
         load,
         /// <summary>
+        /// gets <para />
+        /// push the content of the value at the stack index <para/>
+        /// which is on tots onto the tots
+        /// </summary>
+        getstack,
+        /// <summary>
+        /// sets <para />
+        /// set the content of the value at the stack index <para/>
+        /// which is on second tots to tots
+        /// </summary>
+        setstack,
+        /// <summary>
         /// copy &lt;var1&gt; &lt;var2&gt; <para />
         /// copy value of &lt;var2&gt; into &lt;var1&gt;
         /// </summary>
@@ -154,6 +166,11 @@ namespace XIL.LangDef
         /// swap 2 tots
         /// </summary>
         swap,
+        /// <summary>
+        /// remove <para/>
+        /// remove tots
+        /// </summary>
+        remove,
 
         /// <summary>
         /// rand <para />

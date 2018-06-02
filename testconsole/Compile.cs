@@ -41,13 +41,13 @@ namespace testconsole
                     savename = save;
                 }
                 Console.WriteLine(Path.GetFullPath(savename));
-                var bytecode = Instruction.Serialize(result.CompiledProgram);
-                StoreBinary(savename, bytecode);
+                var program = result.CodeGenerator.Serialize();
+                StoreBinary(savename, program);
             }
             return 0;
         }
 
-        static void StoreBinary(string filename, int[] binary)
+        static void StoreBinary(string filename, XIL.VM.Program program)
         {
             if (File.Exists(filename))
             {
@@ -55,13 +55,7 @@ namespace testconsole
             }
             using (var fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write))
             {
-                using (var bw = new BinaryWriter(fs))
-                {
-                    foreach (var b in binary)
-                    {
-                        bw.Write(b);
-                    }
-                }
+                XIL.VM.Program.Serialize(fs, program);
             }
         }
     }
