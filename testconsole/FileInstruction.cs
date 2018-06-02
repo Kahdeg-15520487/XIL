@@ -1,9 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using XIL.LangDef;
 using XIL.VM;
@@ -40,10 +36,22 @@ namespace testconsole
         }
 
         /// <summary>
+        /// exist &lt;path&gt; <para/>
+        /// check if there is a file exist at path
+        /// </summary>
+        [Instruction(0x61, "existf")]
+        public void ExistFile(Thread thread, int operand1, int operand2)
+        {
+            var path = thread.GetString(operand1);
+            var value = File.Exists(path) ? 1 : 0;
+            thread.Push(value);
+        }
+
+        /// <summary>
 		/// creatf &lt;path&gt; <para/>
 		/// create a file at path
 		/// </summary>
-		[Instruction(0x61, "createf")]
+		[Instruction(0x62, "createf")]
         public void CreateFile(Thread thread, int operand1, int operand2)
         {
             var path = thread.GetString(operand1);
@@ -61,7 +69,7 @@ namespace testconsole
 		/// writec <para/>
 		/// append the char at tots to the openning file
 		/// </summary>
-		[Instruction(0x62, "writec")]
+		[Instruction(0x63, "writec")]
         public void WriteChar(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)
@@ -80,7 +88,7 @@ namespace testconsole
 		/// readc <para/>
 		/// read the char at cursor pos and advance the cursor
 		/// </summary>
-		[Instruction(0x63, "readc")]
+		[Instruction(0x64, "readc")]
         public void ReadChar(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)
@@ -99,7 +107,7 @@ namespace testconsole
 		/// setcur <para/>
 		/// set the cursor position to tots
 		/// </summary>
-		[Instruction(0x64, "setcur")]
+		[Instruction(0x65, "setcur")]
         public void SetCursorPos(Thread thread, int operand1, int operand2)
         {
             //set the cursorPos to tots
@@ -110,7 +118,7 @@ namespace testconsole
 		/// clearf <para/>
 		/// clear the file content
 		/// </summary>
-		[Instruction(0x65, "clearf")]
+		[Instruction(0x66, "clearf")]
         public void ClearFile(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)
@@ -128,7 +136,7 @@ namespace testconsole
 		/// closef <para/>
 		/// close the file
 		/// </summary>
-		[Instruction(0x66, "closef")]
+		[Instruction(0x67, "closef")]
         public void CloseFile(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)

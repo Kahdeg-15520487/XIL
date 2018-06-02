@@ -39,16 +39,26 @@ namespace XIL.LangDef
         /// jump to the given label if a &lt;= b
         /// </summary>
         jle,
-		/// <summary>
-		/// j1 lable <para />
-		/// jump to the given label if tots is 1
-		/// </summary>
-		j1,
+        /// <summary>
+        /// j1 lable <para />
+        /// jump to the given label if tots is 1
+        /// </summary>
+        j1,
 		/// <summary>
 		/// j0 lable <para />
 		/// jump to the given label if tots is 0
 		/// </summary>
 		j0,
+        /// <summary>
+        /// jel lable literal <para />
+        /// jump to the given label if a == literal
+        /// </summary>
+        jel,
+        /// <summary>
+        /// jnel lable literal <para />
+        /// jump to the given label if a != literal
+        /// </summary>
+        jnel,
 
         /// <summary>
         /// exit <para/>
@@ -112,6 +122,11 @@ namespace XIL.LangDef
         /// increment tots
         /// </summary>
         inc,
+        /// <summary>
+        /// neg <para />
+        /// negate tots
+        /// </summary>
+        neg,
 
         /// <summary>
         /// cmp <para />

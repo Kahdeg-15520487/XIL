@@ -11,7 +11,7 @@ using XIL.LangDef;
 namespace testconsole {
 	class Program {
 		public static List<IInstructionImplementation> Libs = null;
-		public static BuiltinInstruction builtinInstruction = new BuiltinInstruction();
+		public static CoreInstruction builtinInstruction = new CoreInstruction();
 		public static IOInstruction ioInstruction = new IOInstruction();
 		public static DiagnosticInstruction diagnosticInstruction = new DiagnosticInstruction();
 		static string LOCAL_ROOT = AppDomain.CurrentDomain.BaseDirectory;
