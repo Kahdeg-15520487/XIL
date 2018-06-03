@@ -99,7 +99,15 @@ namespace testconsole
                 return;
             }
             //read the char from the beginning of the fileContent and advance the cursor
-            char c = fileContent[cursorPos++];
+            if (cursorPos >= fileContent.Length)
+            {
+                Console.WriteLine("EOF reached");
+                Console.WriteLine("execution terminated");
+                thread.EndExecution();
+                return;
+            }
+            char c = fileContent[cursorPos];
+            cursorPos++;
             thread.Push(c);
         }
 
@@ -115,10 +123,28 @@ namespace testconsole
         }
 
         /// <summary>
+		/// lengthf <para/>
+		/// get file content's length
+		/// </summary>
+		[Instruction(0x66, "lengthf")]
+        public void GetFileLength(Thread thread, int operand1, int operand2)
+        {
+            if (fileContent is null)
+            {
+                Console.WriteLine("no file is currently openned");
+                Console.WriteLine("execution terminated");
+                thread.EndExecution();
+                return;
+            }
+            //get fileContent's length
+            thread.Push(fileContent.Length);
+        }
+
+        /// <summary>
 		/// clearf <para/>
 		/// clear the file content
 		/// </summary>
-		[Instruction(0x66, "clearf")]
+		[Instruction(0x67, "clearf")]
         public void ClearFile(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)
@@ -136,7 +162,7 @@ namespace testconsole
 		/// closef <para/>
 		/// close the file
 		/// </summary>
-		[Instruction(0x67, "closef")]
+		[Instruction(0x68, "closef")]
         public void CloseFile(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)
