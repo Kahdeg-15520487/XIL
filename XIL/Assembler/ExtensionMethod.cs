@@ -24,9 +24,14 @@ namespace XIL.Assembler {
 
 		public static bool IsNumeric(this char c) {
 			return (c >= '0' && c <= '9');
-		}
+        }
 
-		public static T[] ToArray<T>(this List<T> values) {
+        public static bool IsHexNumeric(this char c)
+        {
+            return IsNumeric(c) || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+        }
+
+        public static T[] ToArray<T>(this List<T> values) {
 			int itemcount = values.Count;
 			T[] result = new T[itemcount];
 			for (int i = 0; i < itemcount; i++) {

@@ -91,6 +91,50 @@ namespace XIL.Assembler
             return new Token(tokentype, result);
         }
 
+        Token HexNumber()
+        {
+            string hex = "";
+            TokenType tokentype = TokenType.INT;
+            Advance(); //skip 0
+            Advance(); //skip x
+            while (current_char != '\0' && current_char.IsHexNumeric())
+            {
+                hex += current_char;
+                Advance();
+            }
+            hex = Int32.Parse(hex, System.Globalization.NumberStyles.HexNumber).ToString();
+            return new Token(tokentype, hex);
+        }
+
+        Token BinaryNumber()
+        {
+            string bin = "";
+            TokenType tokentype = TokenType.INT;
+            Advance(); //skip 0
+            Advance(); //skip b
+            while (current_char != '\0' && (current_char == '0' || current_char == '1'))
+            {
+                bin += current_char;
+                Advance();
+            }
+            bin = Convert.ToInt32(bin, 2).ToString();
+            return new Token(tokentype, bin);
+        }
+
+        Token Char()
+        {
+            Advance();
+            char result = current_char;
+            TokenType tokentype = TokenType.INT;
+            Advance();
+            if (current_char != '\'')
+            {
+                this.Error();
+            }
+            Advance();
+            return new Token(tokentype, ((int)result).ToString());
+        }
+
         Token Ident()
         {
             string result = "";
@@ -155,6 +199,16 @@ namespace XIL.Assembler
                     continue;
                 }
 
+                if (current_char == '0' && Peek() == 'x')
+                {
+                    return HexNumber();
+                }
+
+                if (current_char == '0' && Peek() == 'b')
+                {
+                    return BinaryNumber();
+                }
+
                 if (current_char.IsNumeric())
                 {
                     return Number();
@@ -163,6 +217,11 @@ namespace XIL.Assembler
                 if (current_char == '-' && Peek().IsNumeric())
                 {
                     return Number();
+                }
+
+                if (current_char == '\'')
+                {
+                    return Char();
                 }
 
                 if (current_char == '"')
