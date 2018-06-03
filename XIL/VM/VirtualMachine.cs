@@ -128,9 +128,22 @@ namespace XIL.VM
             while (!thread.IsDoneExecuting)
             {
                 Instruction currentInstruction = FetchInstruction(thread);
-                //Console.WriteLine(currentInstruction);
+                //Console.WriteLine("{0} {1} {2}", instructionMap[currentInstruction.opCode].Method.Name, currentInstruction.firstOperand, currentInstruction.secondOperand);
                 instructionMap[currentInstruction.opCode].Invoke(thread, currentInstruction.firstOperand, currentInstruction.secondOperand);
+
+                if (thread.IsRuntimeError)
+                {
+                    RuntimeError(currentInstruction, thread.RuntimeErrorMessage);
+                }
             }
+        }
+
+        public void RuntimeError(Instruction instruction, string errormsg)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Runtime error: " + errormsg);
+            Console.WriteLine("at line {0}: {1} {2} {3}", instruction.lineNumber, instructionMap[instruction.opCode].Method.Name, instruction.firstOperand, instruction.secondOperand);
+            Console.WriteLine();
         }
     }
 }

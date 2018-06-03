@@ -23,9 +23,9 @@ namespace XIL.Assembler
         {
             program.Add(instruction);
         }
-        internal void AddInstruction(int opcode, int op1 = 0, int op2 = 0)
+        internal void AddInstruction(int opcode, int op1 = 0, int op2 = 0, int lnb = 0)
         {
-            program.Add(new Instruction(opcode, op1, op2));
+            program.Add(new Instruction(opcode, op1, op2, lnb));
         }
 
         /// <summary>

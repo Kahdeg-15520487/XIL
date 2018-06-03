@@ -167,8 +167,8 @@ public sealed class CoreInstruction : IInstructionImplementation
     [Instruction(InstructionOPCode.add, "add")]
     public void Add(Thread thread, int operand1, int operand2)
     {
-        int op1 = thread.Pop();
         int op2 = thread.Pop();
+        int op1 = thread.Pop();
         int result = op1 + op2;
         thread.Push(result);
     }
@@ -191,8 +191,8 @@ public sealed class CoreInstruction : IInstructionImplementation
     [Instruction(InstructionOPCode.mul, "mul")]
     public void Multiply(Thread thread, int operand1, int operand2)
     {
-        int op1 = thread.Pop();
         int op2 = thread.Pop();
+        int op1 = thread.Pop();
         int result = op1 * op2;
         thread.Push(result);
     }
@@ -264,8 +264,8 @@ public sealed class CoreInstruction : IInstructionImplementation
     [Instruction(InstructionOPCode.cmp, "cmp")]
     public void Compare(Thread thread, int operand1, int operand2)
     {
-        int op1 = thread.Pop();
         int op2 = thread.Pop();
+        int op1 = thread.Pop();
         int result = op1 > op2 ? 1 : op1 < op2 ? -1 : 0;
         thread.Push(result);
     }

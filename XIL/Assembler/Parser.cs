@@ -32,6 +32,9 @@ namespace XIL.Assembler
             CodeGen = codegen;
             CurrentToken = Lexer.GetNextToken();
             InstructionCounter = 0;
+
+            linePrettyPrint = new StringBuilder();
+            linePrettyPrint.AppendFormat("line {0}: ", (Lexer.current_line + 1).ToString().PadLeft(5));
         }
 
         private void InitInstructionMap(IInstructionImplementation[] instructionImplementations)
@@ -57,11 +60,24 @@ namespace XIL.Assembler
             throw new Exception(string.Format("Invalid syntax: unexpected {0} at line {1}, expecting {2}", CurrentToken, Lexer.current_line + 1, expecting));
         }
 
+        StringBuilder linePrettyPrint;
+        private bool IsPrettyPrint = false;
+
         void Eat(TokenType token_type)
         {
             if (token_type == TokenType.ANY || CurrentToken.tokenType == token_type)
             {
-                Console.WriteLine(CurrentToken);
+                if (IsPrettyPrint)
+                    if (token_type == TokenType.NEWLINE)
+                    {
+                        Console.WriteLine(linePrettyPrint.ToString());
+                        linePrettyPrint.Clear();
+                        linePrettyPrint.AppendFormat("line {0}: ", (Lexer.current_line + 1).ToString().PadLeft(5));
+                    }
+                    else
+                    {
+                        linePrettyPrint.Append(CurrentToken + " ");
+                    }
                 CurrentToken = Lexer.GetNextToken();
             }
             else
@@ -101,7 +117,7 @@ namespace XIL.Assembler
             var token = CurrentToken;
             output.Append(token.lexeme);
             Eat(TokenType.IDENT);
-            
+
             //todo throw syntax error on unknown opcode
             opcode = instructionMap[token.lexeme];
 
@@ -122,8 +138,6 @@ namespace XIL.Assembler
                         Eat(TokenType.INT);
                         break;
                     case TokenType.STRING:
-                        //todo parse string constant
-                        Console.WriteLine(CurrentToken.lexeme);
                         op1 = CodeGen.AddString(CurrentToken.lexeme);
                         Eat(TokenType.STRING);
                         break;
@@ -152,8 +166,6 @@ namespace XIL.Assembler
                         Eat(TokenType.INT);
                         break;
                     case TokenType.STRING:
-                        //todo parse string constant
-                        Console.WriteLine(CurrentToken.lexeme);
                         op2 = CodeGen.AddString(CurrentToken.lexeme);
                         Eat(TokenType.STRING);
                         break;
@@ -175,7 +187,7 @@ namespace XIL.Assembler
 
             Eat(TokenType.NEWLINE);
 
-            CodeGen.AddInstruction(opcode, op1, op2);
+            CodeGen.AddInstruction(opcode, op1, op2, Lexer.current_line);
             return output.ToString();
         }
 
@@ -240,8 +252,10 @@ namespace XIL.Assembler
 
         public string Parse()
         {
+            IsPrettyPrint = false;
             ParseAllLabel();
             Lexer.Reset();
+            IsPrettyPrint = true;
             CurrentToken = Lexer.GetNextToken();
             InstructionCounter = 0;
             return XIL();

@@ -1,0 +1,133 @@
+j main
+inittape:
+	;how many tape cell will there be - 1
+	yeet 255
+	looptape:
+	yeet 0
+	swap
+	yeet 1
+	sub
+	dup
+	jel endlooptape 0
+	j looptape
+	endlooptape:
+	rm
+	ret
+	
+main:
+	;open a bf file
+	openf "brainfuck.bf"
+
+	;initiate the tape
+	call inittape
+	
+	;current cell
+	yeet 0
+	
+	loopstart:
+	
+	;read in a character from bf file
+	readf
+	
+	;check if >
+	greater:
+		dup
+		jnel lesser '>'
+		rm
+		yeet 1
+		add
+		;yeet '>'
+		;printc
+		j next
+	
+	;check if <
+	lesser:
+		dup
+		jnel plus '<'
+		rm
+		yeet 1
+		sub
+		;yeet '<'
+		;printc
+		j next
+	
+	;check if +
+	plus:
+		dup
+		jnel minus '+'
+		rm
+		dup
+		dup
+		gets
+		yeet 1
+		add
+		sets
+		;yeet '+'
+		;printc
+		j next
+	
+	;check if -
+	minus:
+		dup
+		jnel dot '-'
+		rm
+		dup
+		dup
+		gets
+		yeet 1
+		sub
+		sets
+		;yeet '-'
+		;printc
+		j next
+	
+	;check if .
+	dot:
+		dup
+		jnel comma '.'
+		rm
+		dup
+		gets
+		printc
+		;yeet '.'
+		;printc
+		j next
+	
+	;check if ,
+	comma:
+		dup
+		jnel opensqbrac ','
+		rm
+		dup
+		readc
+		sets
+		;yeet ','
+		;printc
+		j next
+	
+	;check if [
+	opensqbrac:
+		dup
+		jnel closesqbrac '['
+		rm
+		;yeet '['
+		;printc
+		j next
+	
+	;check if ]
+	closesqbrac:
+		dup
+		jnel ignorechar ']'
+		rm
+		;yeet ']'
+		;printc
+		j next
+		
+	ignorechar:
+		rm
+	next:
+		j loopstart
+	loopend:	
+	yeet 10
+	printc
+	ret

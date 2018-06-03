@@ -24,9 +24,7 @@ namespace testconsole
             var path = thread.GetString(operand1);
             if (!File.Exists(path))
             {
-                Console.WriteLine("{0} not found", path);
-                Console.WriteLine("execution terminated");
-                thread.EndExecution();
+                thread.RuntimeError(string.Format("{0} not found", path));
                 return;
             }
 
@@ -57,26 +55,22 @@ namespace testconsole
             var path = thread.GetString(operand1);
             if (File.Exists(path))
             {
-                Console.WriteLine("{0} already exist", path);
-                Console.WriteLine("execution terminated");
-                thread.EndExecution();
+                thread.RuntimeError(string.Format("{0} already exist", path));
                 return;
             }
             File.WriteAllText(path, "");
         }
 
         /// <summary>
-		/// writec <para/>
+		/// writef <para/>
 		/// append the char at tots to the openning file
 		/// </summary>
-		[Instruction(0x63, "writec")]
-        public void WriteChar(Thread thread, int operand1, int operand2)
+		[Instruction(0x63, "writef")]
+        public void WriteFile(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)
             {
-                Console.WriteLine("no file is currently openned");
-                Console.WriteLine("execution terminated");
-                thread.EndExecution();
+                thread.RuntimeError("no file is currently openned");
                 return;
             }
             //append the char to the end of fileContent
@@ -85,25 +79,21 @@ namespace testconsole
         }
 
         /// <summary>
-		/// readc <para/>
+		/// readf <para/>
 		/// read the char at cursor pos and advance the cursor
 		/// </summary>
-		[Instruction(0x64, "readc")]
-        public void ReadChar(Thread thread, int operand1, int operand2)
+		[Instruction(0x64, "readf")]
+        public void Readfile(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)
             {
-                Console.WriteLine("no file is currently openned");
-                Console.WriteLine("execution terminated");
-                thread.EndExecution();
+                thread.RuntimeError("no file is currently openned");
                 return;
             }
             //read the char from the beginning of the fileContent and advance the cursor
             if (cursorPos >= fileContent.Length)
             {
-                Console.WriteLine("EOF reached");
-                Console.WriteLine("execution terminated");
-                thread.EndExecution();
+                thread.RuntimeError("EOF reached");
                 return;
             }
             char c = fileContent[cursorPos];
@@ -131,9 +121,7 @@ namespace testconsole
         {
             if (fileContent is null)
             {
-                Console.WriteLine("no file is currently openned");
-                Console.WriteLine("execution terminated");
-                thread.EndExecution();
+                thread.RuntimeError("no file is currently openned");
                 return;
             }
             //get fileContent's length
@@ -149,9 +137,7 @@ namespace testconsole
         {
             if (fileContent is null)
             {
-                Console.WriteLine("no file is currently openned");
-                Console.WriteLine("execution terminated");
-                thread.EndExecution();
+                thread.RuntimeError("no file is currently openned");
                 return;
             }
             //set fileContent to empty
@@ -167,9 +153,7 @@ namespace testconsole
         {
             if (fileContent is null)
             {
-                Console.WriteLine("no file is currently openned");
-                Console.WriteLine("execution terminated");
-                thread.EndExecution();
+                thread.RuntimeError("no file is currently openned");
                 return;
             }
             //overwrite the file at filePath with fileContent

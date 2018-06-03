@@ -1,0 +1,77 @@
+j main
+
+fizz:
+  yeet 102 
+  printc
+  yeet 105
+  printc
+  yeet 122
+  printc
+  yeet 122
+  printc
+  ret
+
+buzz:
+  yeet 98
+  printc
+  yeet 117
+  printc
+  yeet 122
+  printc
+  yeet 122
+  printc
+  ret
+
+endline:
+  yeet 10
+  printc
+  ret
+
+main:
+  yeet 1
+loop:
+  dup
+  yeet 15
+  mod
+  jnel nfb 0
+
+  call fizz
+  call buzz
+  call endline
+  j next
+
+nfb:
+  dup
+  yeet 3
+  mod
+  jnel nf 0
+
+  call fizz
+  call endline
+  j next
+
+nf:
+  dup
+  yeet 5
+  mod
+  jnel nb 0
+
+  call buzz
+  call endline
+  j next
+
+nb:
+  dup
+  print
+
+next:
+  yeet 1
+  add
+
+  dup
+  jel end 101
+
+  j loop
+
+end:
+  exit

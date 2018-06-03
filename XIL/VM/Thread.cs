@@ -30,7 +30,7 @@ namespace XIL.VM
         /// </summary>
         public int InstructionCount { get; private set; } = 0;
         public int ExitCode = 0;
-        public int returnJump = 0;
+        public int ReturnJump = 0;
         public int FunctionReturn = 0;
         #endregion
 
@@ -39,6 +39,8 @@ namespace XIL.VM
         public bool IsLoaded => instructions != null;
         public bool IsRunning { get; private set; } = false;
         public bool IsDoneExecuting { get; private set; } = false;
+        public bool IsRuntimeError = false;
+        public string RuntimeErrorMessage = null;
         #endregion
 
         public Thread(Priority priority = Priority.Normal)
@@ -279,6 +281,17 @@ namespace XIL.VM
         /// </summary>
         public void EndExecution()
         {
+            IsRunning = false;
+            IsDoneExecuting = true;
+        }
+
+        /// <summary>
+        /// raise a runtime error on this thread
+        /// </summary>
+        public void RuntimeError(string errmsg)
+        {
+            IsRuntimeError = true;
+            RuntimeErrorMessage = errmsg;
             IsRunning = false;
             IsDoneExecuting = true;
         }
