@@ -61,6 +61,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\XILPreprocessor\XILPreprocessor.csproj">
+      <Project>{9743591E-6902-4288-96D7-399F8267ED05}</Project>
+      <Name>XILPreprocessor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\XIL\XIL.csproj">
       <Project>{49c4f774-57ec-4129-b0f0-f1926fa95d59}</Project>
       <Name>XIL</Name>
