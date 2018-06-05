@@ -37,7 +37,7 @@ namespace XIL.Assembler
             linePrettyPrint.AppendFormat("line {0}: ", (Lexer.current_line + 1).ToString().PadLeft(5));
         }
 
-        private void InitInstructionMap(IInstructionImplementation[] instructionImplementations)
+        private void InitInstructionMap(params IInstructionImplementation[] instructionImplementations)
         {
             instructionMap = new Dictionary<string, int>();
             foreach (var instrImplm in instructionImplementations)

@@ -1,0 +1,168 @@
+j main
+inittape:
+	;how many tape cell will there be - 1
+	yeet 255
+	looptape:
+	yeet 0
+	swap
+	yeet 1
+	sub
+	dup
+	jel endlooptape 0
+	j looptape
+	endlooptape:
+	rm
+	ret
+	
+main:
+	;open a bf file
+	openf "brainfuck.bf"
+
+	;initiate the tape
+	;todo implement a "claim 100" to init a 100 cell to 0 or something
+	;claim will also protect the claimed cells by raising a "Memory Access Violation" runtime error
+	;the "protected claimed cells" is optional and can be turned off
+	; claim <operand> -> claim <operand> cells
+	; claim 		  -> claim 1 cell
+	; claim 0		  -> claim 1 cell (cause array start at 0)
+	call inittape
+	
+	;cell pos positioned at tape length (cause array start at 0)
+	;claim
+	yeet 0
+	;init cell pos to 0
+	;todo constant processing at compile time (macro?)
+	load 255 0
+	
+	;current brainfuck operator
+	;claim
+	yeet 0
+	;init bf op to 0
+	load 256 0
+	
+	;top loop stack
+	;claim
+	yeet 0
+	;init tls to 0
+	load 257 0
+	
+	
+	
+	loopstart:
+	
+	;read in a character from bf file
+	readf
+	pop 256
+	
+	;check if >
+	greater:
+		push 256
+		jnel lesser '>'
+		
+		push 255
+		yeet 1
+		add
+		pop 255
+		
+		;yeet '>'
+		;printc
+		j next
+	
+	;check if <
+	lesser:
+		push 256
+		jnel plus '<'
+		
+		push 255
+		yeet 1
+		sub
+		pop 255
+		
+		;yeet '<'
+		;printc
+		j next
+	
+	;check if +
+	plus:
+		push 256
+		jnel minus '+'
+		
+		push 255
+		dup
+		gets
+		yeet 1
+		add
+		sets
+		
+		;yeet '+'
+		;printc
+		j next
+	
+	;check if -
+	minus:
+		push 256
+		jnel dot '-'
+		
+		push 255
+		dup
+		gets
+		yeet 1
+		sub
+		sets
+		
+		;yeet '-'
+		;printc
+		j next
+	
+	;check if .
+	dot:
+		push 256
+		jnel comma '.'
+		
+		push 255
+		gets
+		printc
+		
+		;yeet '.'
+		;printc
+		j next
+	
+	;check if ,
+	comma:
+		push 256
+		jnel opensqbrac ','
+		
+		push 255
+		readc
+		sets
+		
+		;yeet ','
+		;printc
+		j next
+	
+	;check if [
+	opensqbrac:
+		push 256
+		jnel closesqbrac '['
+		
+		;yeet '['
+		;printc
+		j next
+	
+	;check if ]
+	closesqbrac:
+		push 256
+		jnel ignorechar ']'
+		
+		;yeet ']'
+		;printc
+		j next
+		
+	ignorechar:
+		
+	next:
+		j loopstart
+	loopend:	
+	yeet 10
+	printc
+	ret
