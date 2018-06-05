@@ -68,7 +68,7 @@ namespace XIL.Assembler.Preprocessor
         string Ident()
         {
             string resutlt = "";
-            while (current_char != '\0' && char.IsLetterOrDigit(current_char))
+            while (current_char != '\0' && current_char.IsIdent())
             {
                 resutlt += current_char;
                 Advance();

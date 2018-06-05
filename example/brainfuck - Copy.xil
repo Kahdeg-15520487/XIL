@@ -1,7 +1,12 @@
+#* tapecellcount = 256 *#
+#* cellpos = tapecellcount *#
+#* brainfuck_operator = tapecellcount + 1 *#
+#* topLoopStack = tapecellcount + 2 *#
+
 j main
-inittape:
+initTape:
 	;how many tape cell will there be - 1
-	yeet 255
+	yeet #*tapecellcount*#
 	looptape:
 	yeet 0
 	swap
@@ -12,6 +17,53 @@ inittape:
 	j looptape
 	endlooptape:
 	rm
+	ret
+
+;implement wrap around behaviour for cell 
+;cell==255 -> cell = 0
+;cell==-1 -> cell = 254;
+wrapAroundCellValue:
+	push #*cellpos*#
+	gets
+	jel upperWrapCellValue 256
+	
+	push #*cellpos*#
+	gets	
+	jel lowerWrapCellValue -1
+	
+	ret
+	
+	upperWrapCellValue:
+	push #*cellpos*#
+	yeet 0
+	sets
+	ret
+	
+	lowerWrapCellValue:
+	push #*cellpos*#
+	yeet 255
+	sets	
+	ret
+	
+wrapAroundCellPos:
+	push #*cellpos*#
+	jel upperWrapCellPos #*tapecellcount*#
+	
+	push #*cellpos*#
+	jel lowerWrapCellPos -1
+	
+	ret
+	
+	upperWrapCellPos:
+	yeet 0
+	pop #*cellpos*#
+	ret
+	
+	lowerWrapCellPos:
+	yeet #*tapecellcount*#
+	yeet 1
+	sub
+	pop #*cellpos*#
 	ret
 	
 main:
@@ -25,26 +77,26 @@ main:
 	; claim <operand> -> claim <operand> cells
 	; claim 		  -> claim 1 cell
 	; claim 0		  -> claim 1 cell (cause array start at 0)
-	call inittape
+	call initTape
 	
 	;cell pos positioned at tape length (cause array start at 0)
 	;claim
 	yeet 0
 	;init cell pos to 0
 	;todo constant processing at compile time (macro?)
-	load 255 0
+	load #*cellpos*# 0
 	
 	;current brainfuck operator
 	;claim
 	yeet 0
 	;init bf op to 0
-	load 256 0
+	load #*brainfuck_operator*# 0
 	
 	;top loop stack
 	;claim
 	yeet 0
 	;init tls to 0
-	load 257 0
+	load #*topLoopStack*# 0
 	
 	
 	
@@ -52,17 +104,19 @@ main:
 	
 	;read in a character from bf file
 	readf
-	pop 256
+	pop #*brainfuck_operator*#
 	
 	;check if >
 	greater:
-		push 256
+		push #*brainfuck_operator*#
 		jnel lesser '>'
 		
-		push 255
+		push #*cellpos*#
 		yeet 1
 		add
-		pop 255
+		pop #*cellpos*#
+		
+		call wrapAroundCellPos
 		
 		;yeet '>'
 		;printc
@@ -70,13 +124,15 @@ main:
 	
 	;check if <
 	lesser:
-		push 256
+		push #*brainfuck_operator*#
 		jnel plus '<'
 		
-		push 255
+		push #*cellpos*#
 		yeet 1
 		sub
-		pop 255
+		pop #*cellpos*#
+		
+		call wrapAroundCellPos
 		
 		;yeet '<'
 		;printc
@@ -84,15 +140,17 @@ main:
 	
 	;check if +
 	plus:
-		push 256
+		push #*brainfuck_operator*#
 		jnel minus '+'
 		
-		push 255
+		push #*cellpos*#
 		dup
 		gets
 		yeet 1
 		add
 		sets
+		
+		call wrapAroundCellValue
 		
 		;yeet '+'
 		;printc
@@ -100,15 +158,17 @@ main:
 	
 	;check if -
 	minus:
-		push 256
+		push #*brainfuck_operator*#
 		jnel dot '-'
 		
-		push 255
+		push #*cellpos*#
 		dup
 		gets
 		yeet 1
 		sub
 		sets
+		
+		call wrapAroundCellValue
 		
 		;yeet '-'
 		;printc
@@ -116,10 +176,10 @@ main:
 	
 	;check if .
 	dot:
-		push 256
+		push #*brainfuck_operator*#
 		jnel comma '.'
 		
-		push 255
+		push #*cellpos*#
 		gets
 		printc
 		
@@ -132,7 +192,7 @@ main:
 		push 256
 		jnel opensqbrac ','
 		
-		push 255
+		push #*cellpos*#
 		readc
 		sets
 		
@@ -142,7 +202,7 @@ main:
 	
 	;check if [
 	opensqbrac:
-		push 256
+		push #*brainfuck_operator*#
 		jnel closesqbrac '['
 		
 		;yeet '['
@@ -151,7 +211,7 @@ main:
 	
 	;check if ]
 	closesqbrac:
-		push 256
+		push #*brainfuck_operator*#
 		jnel ignorechar ']'
 		
 		;yeet ']'
