@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using XIL.Assembler;
+using XIL.Assembler.Preprocessor;
 using XIL.LangDef;
 
 namespace testconsole
@@ -27,6 +28,15 @@ namespace testconsole
             }
             var compiler = new Assembler(Program.Libs.ToArray());
             var sourcecode = File.ReadAllText(path) + Environment.NewLine;
+
+            Preprocessor preprocessor = new Preprocessor();
+            sourcecode = preprocessor.Process(sourcecode);
+            if (!preprocessor.IsSuccess)
+            {
+                Console.WriteLine("error with preprocessor");
+                return 0;
+            }
+
             var result = compiler.Compile(sourcecode);
             Console.WriteLine(result.Success ? "sucess" : "false" + result.Message);
             if (result.Success)
