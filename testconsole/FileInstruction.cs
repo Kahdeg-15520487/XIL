@@ -113,10 +113,21 @@ namespace testconsole
         }
 
         /// <summary>
+		/// getcur <para/>
+		/// get the cursor position
+		/// </summary>
+		[Instruction(0x66, "getcur")]
+        public void GetCursorPos(Thread thread, int operand1, int operand2)
+        {
+            //set the cursorPos to tots
+            thread.Push(cursorPos);
+        }
+
+        /// <summary>
 		/// lengthf <para/>
 		/// get file content's length
 		/// </summary>
-		[Instruction(0x66, "lengthf")]
+		[Instruction(0x67, "lengthf")]
         public void GetFileLength(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)
@@ -132,7 +143,7 @@ namespace testconsole
 		/// clearf <para/>
 		/// clear the file content
 		/// </summary>
-		[Instruction(0x67, "clearf")]
+		[Instruction(0x68, "clearf")]
         public void ClearFile(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)
@@ -148,7 +159,7 @@ namespace testconsole
 		/// closef <para/>
 		/// close the file
 		/// </summary>
-		[Instruction(0x68, "closef")]
+		[Instruction(0x69, "closef")]
         public void CloseFile(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)
