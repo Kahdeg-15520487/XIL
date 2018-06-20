@@ -1,10 +1,10 @@
 # References
 
-## []()
+## [](.md)
 
 - [`CoreInstruction`](#coreinstruction)
 
-## [XIL.Assembler](XIL.Assembler)
+## [XIL.Assembler](XIL.Assembler.md)
 
 - [`Assembler`](XIL.Assembler#assembler)
 - [`CodeGenerator`](XIL.Assembler#codegenerator)
@@ -14,14 +14,14 @@
 - [`TokenType`](XIL.Assembler#tokentype)
 - [`VariableScope`](XIL.Assembler#variablescope)
 
-## [XIL.LangDef](XIL.LangDef)
+## [XIL.LangDef](XIL.LangDef.md)
 
 - [`IInstructionImplementation`](XIL.LangDef#iinstructionimplementation)
 - [`Instruction`](XIL.LangDef#instruction)
 - [`InstructionAttribute`](XIL.LangDef#instructionattribute)
 - [`InstructionOPCode`](XIL.LangDef#instructionopcode)
 
-## [XIL.VM](XIL.VM)
+## [XIL.VM](XIL.VM.md)
 
 - [`Priority`](XIL.VM#priority)
 - [`Program`](XIL.VM#program)
