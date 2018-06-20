@@ -33,10 +33,10 @@ Methods
 | --- | --- | --- | 
 | `void` | AddInstruction(`Instruction` instruction) |  | 
 | `void` | AddInstruction(`Int32` opcode, `Int32` op1 = 0, `Int32` op2 = 0, `Int32` lnb = 0) |  | 
-| `void` | AddJumpLabel(`String` label, `Int32` linecount) |  | 
-| `Int32` | AddString(`String` str) |  | 
-| `Int32` | GetJumpTarget(`String` label) |  | 
-| `Int32` | GetString(`String` str) |  | 
+| `void` | AddJumpLabel(`String` label, `Int32` linecount) | add a jump label | 
+| `Int32` | AddString(`String` str) | add a string constant  return the index of the added string constant | 
+| `Int32` | GetJumpTarget(`String` label) | get a jump label's target | 
+| `Int32` | GetString(`String` str) | retrieve a string constant  return -1 if string constant is not exist | 
 | `Program` | Serialize() |  | 
 
 
@@ -128,16 +128,16 @@ Enum
 
 | Value | Name | Summary | 
 | --- | --- | --- | 
-| `0` | INT |  | 
-| `1` | STRING |  | 
-| `2` | BOOL |  | 
-| `3` | VAR |  | 
-| `4` | LABEL |  | 
-| `5` | IDENT |  | 
-| `6` | NEWLINE |  | 
-| `7` | INVALID |  | 
-| `8` | EOF |  | 
-| `9` | ANY |  | 
+| `0` | INT | signed int | 
+| `1` | STRING | will get converted to intarr string | 
+| `2` | BOOL | true = 1, false = 0 | 
+| `3` | VAR | variable | 
+| `4` | LABEL | label | 
+| `5` | IDENT | an instruction | 
+| `6` | NEWLINE | newline | 
+| `7` | INVALID | invalid token | 
+| `8` | EOF | end of file | 
+| `9` | ANY | match any token | 
 
 
 ## `VariableScope`

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace XIL.LangDef
+﻿namespace XIL.LangDef
 {
     public enum InstructionOPCode
     {

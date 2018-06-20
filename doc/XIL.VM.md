@@ -50,7 +50,7 @@ Fields
 
 | Type | Name | Summary | 
 | --- | --- | --- | 
-| `Int32` | currentInstruction |  | 
+| `Int32` | currentInstruction | instruction pointer | 
 | `Int32` | ExitCode |  | 
 | `Int32` | FunctionReturn |  | 
 | `Boolean` | IsRuntimeError |  | 
@@ -64,14 +64,14 @@ Properties
 
 | Type | Name | Summary | 
 | --- | --- | --- | 
-| `Int32` | CurrentFStack |  | 
-| `Int32` | InstructionCount |  | 
+| `Int32` | CurrentFStack | Current function stack | 
+| `Int32` | InstructionCount | program length | 
 | `Boolean` | IsDoneExecuting |  | 
 | `Boolean` | IsLoaded |  | 
 | `Boolean` | IsRunning |  | 
-| `Boolean` | IsStackEmpty |  | 
-| `Instruction` | Item |  | 
-| `Int32` | StackTopIndex |  | 
+| `Boolean` | IsStackEmpty | Check if the stack is empty | 
+| `Instruction` | Item | get an instruction at ``, will throw exception if using negative or out of range index | 
+| `Int32` | StackTopIndex | stack's top index | 
 
 
 Methods
@@ -79,23 +79,23 @@ Methods
 | Type | Name | Summary | 
 | --- | --- | --- | 
 | `void` | AppendInstruction(`Instruction` instr) |  | 
-| `void` | Clear() |  | 
-| `void` | EndExecution() |  | 
-| `Instruction` | FetchInstruction() |  | 
-| `Int32` | Get(`Int32` index) |  | 
+| `void` | Clear() | clear the stack | 
+| `void` | EndExecution() | end this thread | 
+| `Instruction` | FetchInstruction() | fetch the next instruction and advance the instruction pointer | 
+| `Int32` | Get(`Int32` index) | Get the value of the stack element at index | 
 | `String` | GetString(`Int32` index) |  | 
 | `void` | LoadInstructions(`Instruction[]` instrs, `String[]` strs) |  | 
-| `void` | PauseExecution() |  | 
-| `Int32` | Peek() |  | 
-| `Int32` | PeekF() |  | 
-| `Int32` | Pop() |  | 
+| `void` | PauseExecution() | pause this thread | 
+| `Int32` | Peek() | peek the value on tots | 
+| `Int32` | PeekF() | Peek the top function return on stack | 
+| `Int32` | Pop() | Pop off tots and return it | 
 | `Int32[]` | PopArray(`Int32` arrayIndex, `Int32` arraySize) |  | 
-| `Int32` | PopF() |  | 
-| `Int32` | Push(`Int32` value) |  | 
-| `void` | PushArray(`Int32[]` array) |  | 
-| `void` | PushF(`Int32` f) |  | 
-| `void` | RuntimeError(`String` errmsg) |  | 
-| `void` | Set(`Int32` index, `Int32` value) |  | 
+| `Int32` | PopF() | Pop a function return address from stack | 
+| `Int32` | Push(`Int32` value) | push a value on tots | 
+| `void` | PushArray(`Int32[]` array) | push an array on tots | 
+| `void` | PushF(`Int32` f) | Push a function return address on stack | 
+| `void` | RuntimeError(`String` errmsg) | raise a runtime error on this thread | 
+| `void` | Set(`Int32` index, `Int32` value) | Set the stack element at index to the given value | 
 | `void` | SetInstruction(`Int32` index, `Instruction` instr) |  | 
 
 
