@@ -2,7 +2,7 @@
 
 ## [](.md)
 
-- [`CoreInstruction`](.md#coreinstruction)
+- [`CoreInstruction`](CoreInstruction.md#coreinstruction)
 
 ## [XIL.Assembler](XIL.Assembler.md)
 

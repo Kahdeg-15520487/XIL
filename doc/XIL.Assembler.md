@@ -34,9 +34,9 @@ Methods
 | `void` | AddInstruction(`Instruction` instruction) |  | 
 | `void` | AddInstruction(`Int32` opcode, `Int32` op1 = 0, `Int32` op2 = 0, `Int32` lnb = 0) |  | 
 | `void` | AddJumpLabel(`String` label, `Int32` linecount) | add a jump label | 
-| `Int32` | AddString(`String` str) | add a string constant  return the index of the added string constant | 
+| `Int32` | AddString(`String` str) | add a string constant ,  return the index of the added string constant | 
 | `Int32` | GetJumpTarget(`String` label) | get a jump label's target | 
-| `Int32` | GetString(`String` str) | retrieve a string constant  return -1 if string constant is not exist | 
+| `Int32` | GetString(`String` str) | retrieve a string constant ,  return -1 if string constant is not exist | 
 | `Program` | Serialize() |  | 
 
 
