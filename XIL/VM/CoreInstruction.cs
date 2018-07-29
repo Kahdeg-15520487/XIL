@@ -490,6 +490,17 @@ public sealed class CoreInstruction : IInstructionImplementation
     }
 
     /// <summary>
+    /// randmax &lt;max&gt; <para />
+    /// push a random value on tots
+    /// </summary>
+    [Instruction(InstructionOPCode.randrange, "randrange")]
+    public void RandomInRange(Thread thread, int operand1, int operand2)
+    {
+        int result = VirtualMachine.randomNumberGenerator.Next(operand1, operand2);
+        thread.Push(result);
+    }
+
+    /// <summary>
     /// nop <para />
     /// do nothing
     /// </summary>
