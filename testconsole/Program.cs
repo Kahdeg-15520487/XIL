@@ -28,6 +28,11 @@ namespace testconsole
             return CommandLine.Run<Compile>(arg, "compile");
         }
 
+        public static int cil(CommandLineArguments arg)
+        {
+            return CommandLine.Run<CILCompile>(arg, "compile");
+        }
+
         public static int help()
         {
             Console.WriteLine("help:");

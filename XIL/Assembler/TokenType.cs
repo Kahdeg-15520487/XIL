@@ -1,6 +1,6 @@
 ﻿namespace XIL.Assembler
 {
-    public enum TokenType
+    internal enum TokenType
     {
         /// <summary>
         /// signed int

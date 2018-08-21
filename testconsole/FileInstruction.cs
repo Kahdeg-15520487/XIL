@@ -8,6 +8,8 @@ namespace testconsole
 {
     public class FileInstruction : IInstructionImplementation
     {
+        const string lib = "file";
+
         static string filePath = null;
         static string fileContent = null;
         static int cursorPos = 0;
@@ -16,7 +18,7 @@ namespace testconsole
 		/// open &lt;path&gt; <para/>
 		/// open the file at path to read and write
 		/// </summary>
-		[Instruction(0x60, "openf")]
+		[Instruction(0x60, "openf", lib)]
         public void OpenFile(Thread thread, int operand1, int operand2)
         {
             //todo implement file open
@@ -37,7 +39,7 @@ namespace testconsole
         /// exist &lt;path&gt; <para/>
         /// check if there is a file exist at path
         /// </summary>
-        [Instruction(0x61, "existf")]
+        [Instruction(0x61, "existf", lib)]
         public void ExistFile(Thread thread, int operand1, int operand2)
         {
             var path = thread.GetString(operand1);
@@ -49,7 +51,7 @@ namespace testconsole
 		/// creatf &lt;path&gt; <para/>
 		/// create a file at path
 		/// </summary>
-		[Instruction(0x62, "createf")]
+		[Instruction(0x62, "createf", lib)]
         public void CreateFile(Thread thread, int operand1, int operand2)
         {
             var path = thread.GetString(operand1);
@@ -65,7 +67,7 @@ namespace testconsole
 		/// writef <para/>
 		/// append the char at tots to the openning file
 		/// </summary>
-		[Instruction(0x63, "writef")]
+		[Instruction(0x63, "writef", lib)]
         public void WriteFile(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)
@@ -82,7 +84,7 @@ namespace testconsole
 		/// readf <para/>
 		/// read the char at cursor pos and advance the cursor
 		/// </summary>
-		[Instruction(0x64, "readf")]
+		[Instruction(0x64, "readf", lib)]
         public void Readfile(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)
@@ -105,7 +107,7 @@ namespace testconsole
 		/// setcur <para/>
 		/// set the cursor position to tots
 		/// </summary>
-		[Instruction(0x65, "setcur")]
+		[Instruction(0x65, "setcur", lib)]
         public void SetCursorPos(Thread thread, int operand1, int operand2)
         {
             //set the cursorPos to tots
@@ -116,7 +118,7 @@ namespace testconsole
 		/// getcur <para/>
 		/// get the cursor position
 		/// </summary>
-		[Instruction(0x66, "getcur")]
+		[Instruction(0x66, "getcur", lib)]
         public void GetCursorPos(Thread thread, int operand1, int operand2)
         {
             //set the cursorPos to tots
@@ -127,7 +129,7 @@ namespace testconsole
 		/// lengthf <para/>
 		/// get file content's length
 		/// </summary>
-		[Instruction(0x67, "lengthf")]
+		[Instruction(0x67, "lengthf", lib)]
         public void GetFileLength(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)
@@ -143,7 +145,7 @@ namespace testconsole
 		/// clearf <para/>
 		/// clear the file content
 		/// </summary>
-		[Instruction(0x68, "clearf")]
+		[Instruction(0x68, "clearf", lib)]
         public void ClearFile(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)
@@ -159,7 +161,7 @@ namespace testconsole
 		/// closef <para/>
 		/// close the file
 		/// </summary>
-		[Instruction(0x69, "closef")]
+		[Instruction(0x69, "closef", lib)]
         public void CloseFile(Thread thread, int operand1, int operand2)
         {
             if (fileContent is null)

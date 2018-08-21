@@ -1,12 +1,13 @@
-﻿namespace XIL.Assembler {
-    public class Token
+﻿namespace XIL.Assembler
+{
+    internal class Token
     {
         public TokenType tokenType { get; set; }
         public string lexeme { get; set; }
 
-        public Token(TokenType token_type,string lexeme = null)
+        public Token(TokenType token_type, string lexeme = null)
         {
-            this.tokenType = token_type;
+            tokenType = token_type;
             this.lexeme = lexeme;
         }
 

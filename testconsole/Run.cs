@@ -46,7 +46,7 @@ namespace testconsole
                 }
             }
             var vm = new VirtualMachine(Program.Libs.ToArray());
-            VirtualMachine.randomNumberGenerator = new Random(0);
+            VirtualMachine.RandomNumberGenerator = new Random(0);
             foreach (var path in paths)
             {
                 var (instrs, strs) = LoadBinary(path);

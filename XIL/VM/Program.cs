@@ -8,11 +8,25 @@ using XIL.LangDef;
 
 namespace XIL.VM
 {
+    /// <summary>
+    /// An in-memory program
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// bytecodes
+        /// </summary>
         public int[] Bytecode;
+        /// <summary>
+        /// string constant table
+        /// </summary>
         public string[] StringTable;
 
+        /// <summary>
+        /// Initialize a new program
+        /// </summary>
+        /// <param name="instrs"></param>
+        /// <param name="strs"></param>
         public Program(int[] instrs, string[] strs)
         {
             Bytecode = new int[instrs.Length];
@@ -21,6 +35,11 @@ namespace XIL.VM
             Array.Copy(strs, StringTable, strs.Length);
         }
 
+        /// <summary>
+        /// serialize a program into a stream for saving
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="program"></param>
         public static void Serialize(Stream stream,Program program)
         {
             using (var bw = new BinaryWriter(stream))
@@ -38,6 +57,12 @@ namespace XIL.VM
             }
         }
 
+        /// <summary>
+        /// serialize a program from a stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="instructions"></param>
+        /// <param name="stringTable"></param>
         public static void Deserialize(Stream stream,out Instruction[] instructions,out string[] stringTable)
         {
             using (var br = new BinaryReader(stream))

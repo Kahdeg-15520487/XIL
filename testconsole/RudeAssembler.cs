@@ -12,7 +12,7 @@ namespace testconsole {
 			Dictionary<string, int> labels = new Dictionary<string, int>();
 
 			foreach (var instr in prog) {
-				result.Add(instr.opCode);
+				result.Add(instr.OpCode);
 			}
 
 			return result.ToArray();

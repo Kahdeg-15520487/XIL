@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FF0C9737-F1E0-4CC3-97F6-81D1B0821706}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>testconsole</RootNamespace>
-    <AssemblyName>testconsole</AssemblyName>
+    <ProjectGuid>{C339A45B-D912-4FCC-8994-5879DC100545}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>XIL_JIT</RootNamespace>
+    <AssemblyName>XIL-JIT</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -33,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ConsoleApp.CommandLine, Version=1.2.9.0, Culture=neutral, PublicKeyToken=dc0b449018deb2ce, processorArchitecture=MSIL">
-      <HintPath>..\packages\ConsoleApp.CommandLine.1.2.9\lib\net45\ConsoleApp.CommandLine.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,30 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compile.cs" />
-    <Compile Include="DiagnosticInstruction.cs" />
-    <Compile Include="FileInstruction.cs" />
-    <Compile Include="ForeignFunctionInstruction.cs" />
-    <Compile Include="IOInstruction.cs" />
-    <Compile Include="CILCompile.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="CILCompiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RudeAssembler.cs" />
-    <Compile Include="Run.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\XIL-JIT\XIL-JIT.csproj">
-      <Project>{c339a45b-d912-4fcc-8994-5879dc100545}</Project>
-      <Name>XIL-JIT</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\XILPreprocessor\XILPreprocessor.csproj">
-      <Project>{9743591E-6902-4288-96D7-399F8267ED05}</Project>
-      <Name>XILPreprocessor</Name>
-    </ProjectReference>
     <ProjectReference Include="..\XIL\XIL.csproj">
       <Project>{49c4f774-57ec-4129-b0f0-f1926fa95d59}</Project>
       <Name>XIL</Name>
