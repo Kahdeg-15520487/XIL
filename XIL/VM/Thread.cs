@@ -6,14 +6,32 @@ using XIL.LangDef;
 
 namespace XIL.VM
 {
+    /// <summary>
+    /// Thread's priority
+    /// </summary>
     public enum Priority
     {
+        /// <summary>
+        /// 1 timeslice
+        /// </summary>
         Low,
+        /// <summary>
+        /// 4 timeslice
+        /// </summary>
         Normal,
+        /// <summary>
+        /// 8 timeslice
+        /// </summary>
         High,
+        /// <summary>
+        /// run till done
+        /// </summary>
         Exclusive
     }
 
+    /// <summary>
+    /// An execution thread
+    /// </summary>
     public class Thread
     {
         #region data and code
@@ -35,7 +53,7 @@ namespace XIL.VM
         #endregion
 
         #region runtime info
-        public readonly Priority priority = Priority.Normal;
+        public readonly Priority Priority = Priority.Normal;
         public bool IsLoaded => instructions != null;
         public bool IsRunning { get; private set; } = false;
         public bool IsDoneExecuting { get; private set; } = false;
@@ -45,13 +63,13 @@ namespace XIL.VM
 
         public Thread(Priority priority = Priority.Normal)
         {
-            this.priority = priority;
+            this.Priority = priority;
             Init();
         }
 
         public Thread(Instruction[] instrs, string[] strs, Priority priority = Priority.Normal)
         {
-            this.priority = priority;
+            this.Priority = priority;
             LoadInstructions(instrs, strs);
             Init();
         }
