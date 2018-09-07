@@ -8,7 +8,7 @@ using XIL.LangDef;
 
 namespace XIL.Assembler
 {
-    public class Lexer
+    internal class Lexer
     {
         public string source_code { get; private set; }
         public int pos { get; private set; }

@@ -6,24 +6,43 @@ using XIL.LangDef;
 
 namespace XIL.Assembler
 {
-    public class CodeGenerator
+    /// <summary>
+    /// codegen
+    /// </summary>
+    public class CodeGenerator : ICodeGenerator
     {
         private Dictionary<string, int> labels;
-        public List<Instruction> program;
-        public List<string> stringTable;
+        private Dictionary<string, int> libs;
+        private List<Instruction> program;
+        private List<string> stringTable;
 
+        /// <summary>
+        /// constructor
+        /// </summary>
         public CodeGenerator()
         {
             labels = new Dictionary<string, int>();
+            libs = new Dictionary<string, int>();
             program = new List<Instruction>();
             stringTable = new List<string>();
         }
 
-        internal void AddInstruction(Instruction instruction)
+        /// <summary>
+        /// add an instruction
+        /// </summary>
+        /// <param name="instruction"></param>
+        public void AddInstruction(Instruction instruction)
         {
             program.Add(instruction);
         }
-        internal void AddInstruction(int opcode, int op1 = 0, int op2 = 0, int lnb = 0)
+        /// <summary>
+        /// add an instruction
+        /// </summary>
+        /// <param name="opcode">opcode</param>
+        /// <param name="op1">operand 1</param>
+        /// <param name="op2">operand 2</param>
+        /// <param name="lnb">line number for debug purpose, -1 for ignore</param>
+        public void AddInstruction(int opcode, int op1 = 0, int op2 = 0, int lnb = 0)
         {
             program.Add(new Instruction(opcode, op1, op2, lnb));
         }
@@ -31,7 +50,7 @@ namespace XIL.Assembler
         /// <summary>
         /// get a jump label's target
         /// </summary>
-        internal int GetJumpTarget(string label)
+        public int GetJumpLabel(string label)
         {
             return labels[label];
         }
@@ -39,7 +58,7 @@ namespace XIL.Assembler
         /// <summary>
         /// add a jump label
         /// </summary>
-        internal void AddJumpLabel(string label, int linecount)
+        public void AddJumpLabel(string label, int linecount)
         {
             if (!labels.ContainsKey(label))
             {
@@ -51,7 +70,7 @@ namespace XIL.Assembler
         /// retrieve a string constant <para/>
         /// return -1 if string constant is not exist
         /// </summary>
-        internal int GetString(string str)
+        public int GetString(string str)
         {
             return stringTable.FindIndex(s => s.Equals(str));
         }
@@ -60,7 +79,7 @@ namespace XIL.Assembler
         /// add a string constant <para/>
         /// return the index of the added string constant
         /// </summary>
-        internal int AddString(string str)
+        public int AddString(string str)
         {
             int index = GetString(str);
             if (index == -1)
@@ -71,14 +90,40 @@ namespace XIL.Assembler
             return index;
         }
 
-        //todo make codegen
-        public VM.Program Serialize()
+        /// <summary>
+        /// emit a program
+        /// </summary>
+        /// <returns></returns>
+        public VM.Program Emit()
         {
             //serialize program's bytecode
             int[] instrs = Instruction.Serialize(program);
             string[] strs = this.stringTable.ToArray();
             //serialize program's stringtable
             return new VM.Program(instrs, strs);
+        }
+
+        /// <summary>
+        /// add a library metadata
+        /// </summary>
+        /// <param name="lib"></param>
+        public int AddLibrary(string lib)
+        {
+            if (!libs.ContainsKey(lib))
+            {
+                libs.Add(lib, labels.Count);
+            }
+            return libs.Count - 1;
+        }
+
+        /// <summary>
+        /// get a library index
+        /// </summary>
+        /// <param name="lib"></param>
+        /// <returns></returns>
+        public int GetLibrary(string lib)
+        {
+            return libs[lib];
         }
     }
 }

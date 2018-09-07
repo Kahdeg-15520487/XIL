@@ -1,5 +1,8 @@
 ﻿namespace XIL.LangDef
 {
+    /// <summary>
+    /// Core Instruction Operation Code
+    /// </summary>
     public enum InstructionOPCode
     {
         /// <summary>
@@ -9,7 +12,7 @@
         jmp,
         /// <summary>
         /// je lable <para />
-        /// jump to the given label if a = b
+        /// jump to the given label if a == b
         /// </summary>
         je,
         /// <summary>
@@ -190,17 +193,27 @@
         /// push a random value on tots
         /// </summary>
         rand,
-		/// <summary>
-		/// rand <para />
-		/// push a random value on tots
-		/// </summary>
-		randmax,
+        /// <summary>
+        /// randseed &lt;var&gt; <para />
+        /// set the random seed of the vm
+        /// </summary>
+        randseed,
+        /// <summary>
+        /// randmax &lt;var&gt; <para />
+        /// push a random value that is lesser than &lt;var&gt; on tots
+        /// </summary>
+        randmax,
+        /// <summary>
+        /// randmax &lt;min&gt; &lt;max&gt; <para />
+        /// push a random value that is in the range of &lt;min&gt; and &lt;max&gt; on tots
+        /// </summary>
+        randrange,
 
-		/// <summary>
-		/// call &lt;label&gt; <para />
-		/// store the current ic into return target and jump to the given label
-		/// </summary>
-		call,
+        /// <summary>
+        /// call &lt;label&gt; <para />
+        /// store the current ic into return target and jump to the given label
+        /// </summary>
+        call,
         /// <summary>
         /// ret <para />
         /// jump to the return target

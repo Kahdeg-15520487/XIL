@@ -8,18 +8,18 @@ using System.Reflection;
 
 namespace XIL.Assembler
 {
-    public partial class Parser
+    internal class Parser
     {
-        public Lexer Lexer { get; private set; }
-        public VariableScope GlobalScope { get; private set; }
-        public CodeGenerator CodeGen { get; private set; }
-        public Token CurrentToken { get; private set; }
-        public int InstructionCounter { get; private set; }
+        internal Lexer Lexer { get; private set; }
+        internal VariableScope GlobalScope { get; private set; }
+        internal ICodeGenerator CodeGen { get; private set; }
+        internal Token CurrentToken { get; private set; }
+        internal int InstructionCounter { get; private set; }
 
         private VariableScope currentScope;
         private static Dictionary<string, int> instructionMap = null;
 
-        public Parser(Lexer lexer, CodeGenerator codegen, params IInstructionImplementation[] instructionImplementations)
+        internal Parser(Lexer lexer, ICodeGenerator codegen, params IInstructionImplementation[] instructionImplementations)
         {
             if (instructionMap == null)
             {
@@ -150,7 +150,7 @@ namespace XIL.Assembler
                         Eat(TokenType.VAR);
                         break;
                     case TokenType.IDENT:
-                        op1 = CodeGen.GetJumpTarget(CurrentToken.lexeme);
+                        op1 = CodeGen.GetJumpLabel(CurrentToken.lexeme);
                         Eat(TokenType.IDENT);
                         break;
                 }
@@ -178,7 +178,7 @@ namespace XIL.Assembler
                         Eat(TokenType.VAR);
                         break;
                     case TokenType.IDENT:
-                        op2 = CodeGen.GetJumpTarget(CurrentToken.lexeme);
+                        op2 = CodeGen.GetJumpLabel(CurrentToken.lexeme);
                         Eat(TokenType.IDENT);
                         break;
                 }

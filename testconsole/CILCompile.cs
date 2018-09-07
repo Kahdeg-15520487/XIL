@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+
 using XIL.Assembler;
 using XIL.Assembler.Preprocessor;
-using XIL.LangDef;
+using XILtoCIL;
 
 namespace testconsole
 {
-    /// <summary>
-    /// Compile xil file to xse file
-    /// </summary>
-    class Compile
+    class CILCompile
     {
         public static int compile(string path = null, string save = null)
         {
@@ -34,10 +34,12 @@ namespace testconsole
             if (!preprocessor.IsSuccess)
             {
                 Console.WriteLine("error with preprocessor");
-                return 0;
+                return 3;
             }
 
-            var result = compiler.Compile(sourcecode);
+            CilCodeGenerator codegen = new CilCodeGenerator();
+
+            var result = compiler.Compile(sourcecode, codegen);
             Console.WriteLine(result.Success ? "sucess" : "false" + result.Message);
             if (result.Success)
             {
@@ -51,22 +53,10 @@ namespace testconsole
                     savename = save;
                 }
                 Console.WriteLine(Path.GetFullPath(savename));
-                var program = result.CodeGenerator.Emit();
-                StoreBinary(savename, program);
+                var program = codegen.EmitDynamicMethod();
+                Console.WriteLine(program?.Invoke());
             }
             return 0;
-        }
-
-        static void StoreBinary(string filename, XIL.VM.Program program)
-        {
-            if (File.Exists(filename))
-            {
-                //todo check file and if it exist, ask if want to overwrite
-            }
-            using (var fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write))
-            {
-                XIL.VM.Program.Serialize(fs, program);
-            }
         }
     }
 }

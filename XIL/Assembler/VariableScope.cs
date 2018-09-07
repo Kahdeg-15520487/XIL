@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace XIL.Assembler {
-	public class VariableScope {
+	internal class VariableScope {
 		public Dictionary<string, int> vars;
 		public int CurrentStackslot { get; private set; }
 

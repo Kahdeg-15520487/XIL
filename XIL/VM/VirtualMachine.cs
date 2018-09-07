@@ -7,20 +7,28 @@ using XIL.LangDef;
 
 namespace XIL.VM
 {
+    /// <summary>
+    /// instruction delegate
+    /// </summary>
+    public delegate void InstructionAction(Thread thread, int operand1, int operand2);
+
+    /// <summary>
+    /// A XIL virtual machine
+    /// </summary>
     public class VirtualMachine
     {
         List<Thread> threads;
-        public static Dictionary<int, InstructionAction> instructionMap = null;
-        public static List<string> loadedLibrary = null;
-        public static Random randomNumberGenerator = null;
+        public static Dictionary<int, InstructionAction> InstructionMap = null;
+        public static List<string> LoadedLibrary = null;
+        public static Random RandomNumberGenerator = null;
         int currentThread = 0;
-        public List<int> exitcodes;
+        public List<int> Exitcodes;
         public int LastStep { get; private set; } = 0;
         public int CurrentStep { get; private set; } = 0;
 
         public VirtualMachine(params IInstructionImplementation[] instructionImplementations)
         {
-            if (instructionMap == null)
+            if (InstructionMap == null)
             {
                 InitInstructionMap(instructionImplementations);
             }
@@ -29,11 +37,11 @@ namespace XIL.VM
 
         private void InitInstructionMap(IInstructionImplementation[] instructionImplementations)
         {
-            instructionMap = new Dictionary<int, InstructionAction>();
-            loadedLibrary = new List<string>();
+            InstructionMap = new Dictionary<int, InstructionAction>();
+            LoadedLibrary = new List<string>();
             foreach (var instrImplm in instructionImplementations)
             {
-                loadedLibrary.Add(instrImplm.GetType().Name);
+                LoadedLibrary.Add(instrImplm.GetType().Name);
 
                 var methods = instrImplm.GetType().GetTypeInfo().GetMethods()
                   .Where(m => m.GetCustomAttributes(typeof(InstructionAttribute), false).Count() > 0);
@@ -45,26 +53,26 @@ namespace XIL.VM
                     //get delegate from method
                     var action = (InstructionAction)method.CreateDelegate(typeof(InstructionAction), instrImplm);
                     //map said delegate to instruction
-                    instructionMap.Add(attr.OpCode, action);
+                    InstructionMap.Add(attr.OpCode, action);
                 }
             }
         }
 
         public static bool ContainLibrary(string libname)
         {
-            return loadedLibrary.Contains(libname);
+            return LoadedLibrary.Contains(libname);
         }
 
         private void Init()
         {
             threads = new List<Thread>();
 
-            if (randomNumberGenerator != null)
+            if (RandomNumberGenerator != null)
             {
-                randomNumberGenerator = new Random();
+                RandomNumberGenerator = new Random();
             }
 
-            exitcodes = new List<int>();
+            Exitcodes = new List<int>();
             CurrentStep = 0;
             LastStep = 0;
         }
@@ -77,7 +85,7 @@ namespace XIL.VM
                 return false;
             }
             threads.Add(new Thread(instrs, strs));
-            exitcodes.Add(0);
+            Exitcodes.Add(0);
             return true;
         }
 
@@ -86,10 +94,10 @@ namespace XIL.VM
             bool isOK = true;
             foreach (var instr in instrs)
             {
-                if (!instructionMap.ContainsKey(instr.opCode))
+                if (!InstructionMap.ContainsKey(instr.OpCode))
                 {
                     isOK = false;
-                    Console.WriteLine("Undefined opcode: {0:X}", instr.opCode);
+                    Console.WriteLine("Undefined opcode: {0:X}", instr.OpCode);
                 }
             }
             return isOK;
@@ -129,20 +137,21 @@ namespace XIL.VM
             {
                 Instruction currentInstruction = FetchInstruction(thread);
                 //Console.WriteLine("{0} {1} {2}", instructionMap[currentInstruction.opCode].Method.Name, currentInstruction.firstOperand, currentInstruction.secondOperand);
-                instructionMap[currentInstruction.opCode].Invoke(thread, currentInstruction.firstOperand, currentInstruction.secondOperand);
+                InstructionMap[currentInstruction.OpCode].Invoke(thread, currentInstruction.FirstOperand, currentInstruction.SecondOperand);
 
                 if (thread.IsRuntimeError)
                 {
                     RuntimeError(currentInstruction, thread.RuntimeErrorMessage);
                 }
             }
+            Exitcodes[currentThread] = thread.ExitCode;
         }
 
         public void RuntimeError(Instruction instruction, string errormsg)
         {
             Console.WriteLine();
             Console.WriteLine("Runtime error: " + errormsg);
-            Console.WriteLine("at line {0}: {1} {2} {3}", instruction.lineNumber, instructionMap[instruction.opCode].Method.Name, instruction.firstOperand, instruction.secondOperand);
+            Console.WriteLine("at line {0}: {1} {2} {3}", instruction.LineNumber, InstructionMap[instruction.OpCode].Method.Name, instruction.FirstOperand, instruction.SecondOperand);
             Console.WriteLine();
         }
     }

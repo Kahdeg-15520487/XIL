@@ -10,12 +10,13 @@ using XIL.VM;
 
 namespace testconsole
 {
-
     public class ForeignFunctionInstruction : IInstructionImplementation
     {
+        const string lib = "ffi";
+
         public static Dictionary<string, Action<Thread>> ForeignFunctionMap = null;
 
-        public static void InitForeignFunctionMap(params (string name,Action<Thread> func)[] foreignfuncs)
+        public static void InitForeignFunctionMap(params (string name, Action<Thread> func)[] foreignfuncs)
         {
             ForeignFunctionMap = new Dictionary<string, Action<Thread>>();
             foreach (var (name, func) in foreignfuncs)
@@ -32,7 +33,7 @@ namespace testconsole
 		/// host &lt;foreign function name&gt; <para/>
 		/// call the host function
 		/// </summary>
-		[Instruction(0x50, "host")]
+		[Instruction(0x50, "host", lib)]
         public void HostCall(Thread thread, int operand1, int operand2)
         {
             if (ForeignFunctionMap is null)

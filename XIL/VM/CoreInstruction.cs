@@ -474,8 +474,18 @@ public sealed class CoreInstruction : IInstructionImplementation
     [Instruction(InstructionOPCode.rand, "rand")]
     public void Random(Thread thread, int operand1, int operand2)
     {
-        int result = VirtualMachine.randomNumberGenerator.Next();
+        int result = VirtualMachine.RandomNumberGenerator.Next();
         thread.Push(result);
+    }
+
+    /// <summary>
+    /// randseed &lt;var&gt; <para />
+    /// set the random seed of the vm
+    /// </summary>
+    [Instruction(InstructionOPCode.randseed, "randseed")]
+    public void RandSeed(Thread thread, int operand1, int operand2)
+    {
+        VirtualMachine.RandomNumberGenerator = new Random(operand1);
     }
 
     /// <summary>
@@ -485,7 +495,18 @@ public sealed class CoreInstruction : IInstructionImplementation
     [Instruction(InstructionOPCode.randmax, "randmax")]
     public void RandomMax(Thread thread, int operand1, int operand2)
     {
-        int result = VirtualMachine.randomNumberGenerator.Next(operand1);
+        int result = VirtualMachine.RandomNumberGenerator.Next(operand1);
+        thread.Push(result);
+    }
+
+    /// <summary>
+    /// randmax &lt;max&gt; <para />
+    /// push a random value on tots
+    /// </summary>
+    [Instruction(InstructionOPCode.randrange, "randrange")]
+    public void RandomInRange(Thread thread, int operand1, int operand2)
+    {
+        int result = VirtualMachine.RandomNumberGenerator.Next(operand1, operand2);
         thread.Push(result);
     }
 

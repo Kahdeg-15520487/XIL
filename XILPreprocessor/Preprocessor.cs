@@ -8,6 +8,7 @@ namespace XIL.Assembler.Preprocessor
     public class Preprocessor
     {
         public bool IsSuccess = true;
+        public string ErrorMessage = null;
         struct MacroDefinition
         {
             public int Start { get; set; }
@@ -86,7 +87,7 @@ namespace XIL.Assembler.Preprocessor
 
                         //ignore output
                         var asgm = result as Assignment;
-                        Console.WriteLine("{0} -> {1} = {2}", macro.Macro, asgm.ident.token.lexeme, output);
+                        //Console.WriteLine("{0} -> {1} = {2}", macro.Macro, asgm.ident.token.lexeme, output);
 
                         //replace macro with empty space
                         //processedSource.Replace()
@@ -94,14 +95,15 @@ namespace XIL.Assembler.Preprocessor
                     }
                     else
                     {
-                        Console.WriteLine("{0} -> {1}", macro.Macro, output);
+                        //Console.WriteLine("{0} -> {1}", macro.Macro, output);
                         //replace macro with output
                         processedSource = processedSource.Replace(macro.Start - 1, macro.End - macro.Start + 1, output.ToString());
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    //Console.WriteLine(e.Message);
+                    ErrorMessage = e.Message;
                     IsSuccess = false;
                 }
             }
