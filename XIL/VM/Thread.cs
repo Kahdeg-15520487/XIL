@@ -14,19 +14,38 @@ namespace XIL.VM
         /// <summary>
         /// 1 timeslice
         /// </summary>
-        Low,
+        Low = 1,
         /// <summary>
         /// 4 timeslice
         /// </summary>
-        Normal,
+        Normal = 4,
         /// <summary>
         /// 8 timeslice
         /// </summary>
-        High,
+        High = 8,
         /// <summary>
         /// run till done
         /// </summary>
-        Exclusive
+        Exclusive = int.MaxValue
+    }
+
+    /// <summary>
+    /// Thread's state
+    /// </summary>
+    public enum ThreadState
+    {
+        /// <summary>
+        /// thread is running
+        /// </summary>
+        Running,
+        /// <summary>
+        /// thread is paused
+        /// </summary>
+        Pause,
+        /// <summary>
+        /// thread has done executing
+        /// </summary>
+        Done
     }
 
     /// <summary>
@@ -54,6 +73,7 @@ namespace XIL.VM
 
         #region runtime info
         public readonly Priority Priority = Priority.Normal;
+        public ThreadState State = ThreadState.Running;
         public bool IsLoaded => instructions != null;
         public bool IsRunning { get; private set; } = false;
         public bool IsDoneExecuting { get; private set; } = false;
@@ -63,13 +83,13 @@ namespace XIL.VM
 
         public Thread(Priority priority = Priority.Normal)
         {
-            this.Priority = priority;
+            Priority = priority;
             Init();
         }
 
         public Thread(Instruction[] instrs, string[] strs, Priority priority = Priority.Normal)
         {
-            this.Priority = priority;
+            Priority = priority;
             LoadInstructions(instrs, strs);
             Init();
         }
@@ -221,7 +241,7 @@ namespace XIL.VM
         /// <summary>
         /// Current function stack
         /// </summary>
-        public int CurrentFStack { get => fstack.Count; }
+        public int CurrentFStack => fstack.Count;
         /// <summary>
         /// Pop a function return address from stack
         /// </summary>
@@ -301,6 +321,7 @@ namespace XIL.VM
         {
             IsRunning = false;
             IsDoneExecuting = true;
+            State = ThreadState.Done;
         }
 
         /// <summary>

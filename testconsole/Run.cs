@@ -53,8 +53,14 @@ namespace testconsole
                 vm.LoadProgram(instrs, strs);
             }
             Stopwatch stopwatch = new Stopwatch();
+            const float timeSlice = 10;
+            var timer = new System.Timers.Timer(timeSlice);
+            timer.Elapsed += (o, e) => { Console.WriteLine("tick {0}", vm.Tick()); };
+
             stopwatch.Start();
+            timer.Start();
             vm.Run();
+            timer.Stop();
             stopwatch.Stop();
             Console.WriteLine($"Execution take {stopwatch.ElapsedMilliseconds} ms");
             return 0;

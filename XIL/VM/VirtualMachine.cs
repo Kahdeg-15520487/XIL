@@ -23,8 +23,12 @@ namespace XIL.VM
         public static Random RandomNumberGenerator = null;
         int currentThread = 0;
         public List<int> Exitcodes;
-        public int LastStep { get; private set; } = 0;
-        public int CurrentStep { get; private set; } = 0;
+
+        public int TickElapsedSinceLastTimeSlice;
+        public int Tick()
+        {
+            return ++TickElapsedSinceLastTimeSlice;
+        }
 
         public VirtualMachine(params IInstructionImplementation[] instructionImplementations)
         {
@@ -73,8 +77,7 @@ namespace XIL.VM
             }
 
             Exitcodes = new List<int>();
-            CurrentStep = 0;
-            LastStep = 0;
+            TickElapsedSinceLastTimeSlice = 0;
         }
 
         public bool LoadProgram(Instruction[] instrs, string[] strs)
@@ -103,15 +106,26 @@ namespace XIL.VM
             return isOK;
         }
 
-        private Thread GetNextThread()
+        private bool GetNextThread()
         {
-            currentThread++;
-            if (currentThread == threads.Count)
+            var ct = currentThread;
+            do
             {
-                currentThread = 0;
-            }
-            return threads[currentThread];
+                currentThread++;
+                currentThread = Wrap(currentThread, 0, threads.Count);
+                if (currentThread == ct)
+                {
+                    return false;
+                }
+            } while (threads[currentThread].State != ThreadState.Running);
+            return true;
         }
+
+        static int Wrap(int i, int min, int max)
+        {
+            return i % max + min;
+        }
+
 
         private Instruction FetchInstruction(Thread thread)
         {
@@ -126,25 +140,53 @@ namespace XIL.VM
             }
         }
 
+        private bool IsAllThreadDone()
+        {
+            return threads.All(t => t.State == ThreadState.Done);
+        }
+
+        private bool IsCurrentThreadDoneOrTimeOut()
+        {
+            return threads[currentThread].State == ThreadState.Done
+                || TickElapsedSinceLastTimeSlice >= (int)threads[currentThread].Priority;
+        }
+
         public void Run()
         {
-            Thread thread = GetNextThread();
-            //if (thread != null)
-            //todo non blocking thread execution
-            //either offset thread execution to another thread
-            //or emulate multithreading using timeslice
-            while (!thread.IsDoneExecuting)
-            {
-                Instruction currentInstruction = FetchInstruction(thread);
-                //Console.WriteLine("{0} {1} {2}", instructionMap[currentInstruction.opCode].Method.Name, currentInstruction.firstOperand, currentInstruction.secondOperand);
-                InstructionMap[currentInstruction.OpCode].Invoke(thread, currentInstruction.FirstOperand, currentInstruction.SecondOperand);
+            //Thread thread = GetNextThread();
 
-                if (thread.IsRuntimeError)
+            while (true)
+            {
+                if (IsAllThreadDone())
                 {
-                    RuntimeError(currentInstruction, thread.RuntimeErrorMessage);
+                    break;
                 }
+
+                if (IsCurrentThreadDoneOrTimeOut())
+                {
+                    TickElapsedSinceLastTimeSlice = 0;
+                    GetNextThread();
+                }
+
+                var thread = threads[currentThread];
+                Console.WriteLine("thread {0}, priority {1}, tick {2}", currentThread, thread.Priority, TickElapsedSinceLastTimeSlice);
+                //if (thread != null)
+                //todo non blocking thread execution
+                //either offset thread execution to another thread
+                //or emulate multithreading using timeslice
+                //while (!thread.IsDoneExecuting)
+                {
+                    Instruction currentInstruction = FetchInstruction(thread);
+                    //Console.WriteLine("{0} {1} {2}", instructionMap[currentInstruction.opCode].Method.Name, currentInstruction.firstOperand, currentInstruction.secondOperand);
+                    InstructionMap[currentInstruction.OpCode].Invoke(thread, currentInstruction.FirstOperand, currentInstruction.SecondOperand);
+
+                    if (thread.IsRuntimeError)
+                    {
+                        RuntimeError(currentInstruction, thread.RuntimeErrorMessage);
+                    }
+                }
+                Exitcodes[currentThread] = thread.ExitCode;
             }
-            Exitcodes[currentThread] = thread.ExitCode;
         }
 
         public void RuntimeError(Instruction instruction, string errormsg)

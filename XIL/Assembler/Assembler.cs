@@ -33,14 +33,14 @@ namespace XIL.Assembler
             Lexer lexer = new Lexer(sourcecode);
             CodeGenerator codegen = new CodeGenerator();
             Parser parser = new Parser(lexer, codegen, instructionImplementations);
-            try
+            //try
             {
                 parser.Parse();
             }
-            catch (Exception e)
-            {
-                return new CompileResult(false, e.Message, codegen);
-            }
+            //catch (Exception e)
+            //{
+            //    return new CompileResult(false, e.Message, codegen);
+            //}
 
             return new CompileResult(true, "Success.", codegen);
         }
