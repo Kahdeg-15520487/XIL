@@ -53,7 +53,7 @@ namespace testconsole
                     savename = save;
                 }
                 Console.WriteLine(Path.GetFullPath(savename));
-                var program = codegen.EmitDynamicMethod();
+                Func<int> program = codegen.EmitDynamicMethod();
                 Console.WriteLine(program?.Invoke());
             }
             return 0;

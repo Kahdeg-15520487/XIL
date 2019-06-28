@@ -38,6 +38,7 @@ namespace testconsole
             Console.WriteLine("help:");
             Console.WriteLine("compile <program.xil>");
             Console.WriteLine("run <program.xse>");
+            Console.WriteLine("cil <program.xil>");
             return 0;
         }
 

@@ -29,7 +29,7 @@ namespace testconsole
         //	return 0;
         //}
 
-        public static int run(string[] paths)
+        public static int run(string[] paths, int verbosity = (int)VirtualMachineVerboseLevel.RuntimeError)
         {
             Console.WriteLine("run {0}", string.Join(" ", paths));
             if (paths.GetLength(0) == 0)
@@ -45,7 +45,10 @@ namespace testconsole
                     return 2;
                 }
             }
-            var vm = new VirtualMachine(Program.Libs.ToArray());
+            var vm = new VirtualMachine(Program.Libs.ToArray())
+            {
+                VerboseLevel = (VirtualMachineVerboseLevel)verbosity
+            };
             VirtualMachine.RandomNumberGenerator = new Random(0);
             foreach (var path in paths)
             {

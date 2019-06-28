@@ -7,6 +7,16 @@ using XIL.LangDef;
 
 namespace XIL.VM
 {
+    [Flags]
+    public enum VirtualMachineVerboseLevel
+    {
+        None = 0,
+        LoadtimeError = 1,
+        RuntimeError = 2,
+        InstructionInfo = 4,
+        ThreadInfo = 8,
+    }
+
     /// <summary>
     /// instruction delegate
     /// </summary>
@@ -24,19 +34,21 @@ namespace XIL.VM
         int currentThread = 0;
         public List<int> Exitcodes;
 
+        public VirtualMachineVerboseLevel VerboseLevel { get; set; } = VirtualMachineVerboseLevel.LoadtimeError | VirtualMachineVerboseLevel.RuntimeError;
+
         public int TickElapsedSinceLastTimeSlice;
         public int Tick()
         {
-            return ++TickElapsedSinceLastTimeSlice;
+            return ++this.TickElapsedSinceLastTimeSlice;
         }
 
         public VirtualMachine(params IInstructionImplementation[] instructionImplementations)
         {
             if (InstructionMap == null)
             {
-                InitInstructionMap(instructionImplementations);
+                this.InitInstructionMap(instructionImplementations);
             }
-            Init();
+            this.Init();
         }
 
         private void InitInstructionMap(IInstructionImplementation[] instructionImplementations)
@@ -69,26 +81,25 @@ namespace XIL.VM
 
         private void Init()
         {
-            threads = new List<Thread>();
+            this.threads = new List<Thread>();
 
             if (RandomNumberGenerator != null)
             {
                 RandomNumberGenerator = new Random();
             }
 
-            Exitcodes = new List<int>();
-            TickElapsedSinceLastTimeSlice = 0;
+            this.Exitcodes = new List<int>();
+            this.TickElapsedSinceLastTimeSlice = 0;
         }
 
         public bool LoadProgram(Instruction[] instrs, string[] strs)
         {
-            if (!ValidateProgram(instrs))
+            if (!this.ValidateProgram(instrs))
             {
-                Console.WriteLine("Program contain undefined opcode");
                 return false;
             }
-            threads.Add(new Thread(instrs, strs));
-            Exitcodes.Add(0);
+            this.threads.Add(new Thread(instrs, strs));
+            this.Exitcodes.Add(0);
             return true;
         }
 
@@ -100,7 +111,7 @@ namespace XIL.VM
                 if (!InstructionMap.ContainsKey(instr.OpCode))
                 {
                     isOK = false;
-                    Console.WriteLine("Undefined opcode: {0:X}", instr.OpCode);
+                    this.LoadtimeErrorLog(instr, "Program contain undefined opcode");
                 }
             }
             return isOK;
@@ -108,16 +119,16 @@ namespace XIL.VM
 
         private bool GetNextThread()
         {
-            var ct = currentThread;
+            var ct = this.currentThread;
             do
             {
-                currentThread++;
-                currentThread = Wrap(currentThread, 0, threads.Count);
-                if (currentThread == ct)
+                this.currentThread++;
+                this.currentThread = Wrap(this.currentThread, 0, this.threads.Count);
+                if (this.currentThread == ct)
                 {
                     return false;
                 }
-            } while (threads[currentThread].State != ThreadState.Running);
+            } while (this.threads[this.currentThread].State != ThreadState.Running);
             return true;
         }
 
@@ -142,13 +153,13 @@ namespace XIL.VM
 
         private bool IsAllThreadDone()
         {
-            return threads.All(t => t.State == ThreadState.Done);
+            return this.threads.All(t => t.State == ThreadState.Done);
         }
 
         private bool IsCurrentThreadDoneOrTimeOut()
         {
-            return threads[currentThread].State == ThreadState.Done
-                || TickElapsedSinceLastTimeSlice >= (int)threads[currentThread].Priority;
+            return this.threads[this.currentThread].State == ThreadState.Done
+                || this.TickElapsedSinceLastTimeSlice >= (int)this.threads[this.currentThread].Priority;
         }
 
         public void Run()
@@ -157,44 +168,74 @@ namespace XIL.VM
 
             while (true)
             {
-                if (IsAllThreadDone())
+                if (this.IsAllThreadDone())
                 {
                     break;
                 }
 
-                if (IsCurrentThreadDoneOrTimeOut())
+                if (this.IsCurrentThreadDoneOrTimeOut())
                 {
-                    TickElapsedSinceLastTimeSlice = 0;
-                    GetNextThread();
+                    this.TickElapsedSinceLastTimeSlice = 0;
+                    this.GetNextThread();
                 }
 
-                var thread = threads[currentThread];
-                Console.WriteLine("thread {0}, priority {1}, tick {2}", currentThread, thread.Priority, TickElapsedSinceLastTimeSlice);
+                Thread thread = this.threads[this.currentThread];
+                this.ThreadInfoLog(thread);
                 //if (thread != null)
                 //todo non blocking thread execution
                 //either offset thread execution to another thread
                 //or emulate multithreading using timeslice
                 //while (!thread.IsDoneExecuting)
                 {
-                    Instruction currentInstruction = FetchInstruction(thread);
-                    //Console.WriteLine("{0} {1} {2}", instructionMap[currentInstruction.opCode].Method.Name, currentInstruction.firstOperand, currentInstruction.secondOperand);
+                    Instruction currentInstruction = this.FetchInstruction(thread);
+                    this.InstructionInfoLog(currentInstruction);
                     InstructionMap[currentInstruction.OpCode].Invoke(thread, currentInstruction.FirstOperand, currentInstruction.SecondOperand);
 
                     if (thread.IsRuntimeError)
                     {
-                        RuntimeError(currentInstruction, thread.RuntimeErrorMessage);
+                        this.RuntimeErrorLog(currentInstruction, thread.RuntimeErrorMessage);
                     }
                 }
-                Exitcodes[currentThread] = thread.ExitCode;
+                this.Exitcodes[this.currentThread] = thread.ExitCode;
             }
         }
 
-        public void RuntimeError(Instruction instruction, string errormsg)
+        private void ThreadInfoLog(Thread thread)
         {
-            Console.WriteLine();
-            Console.WriteLine("Runtime error: " + errormsg);
-            Console.WriteLine("at line {0}: {1} {2} {3}", instruction.LineNumber, InstructionMap[instruction.OpCode].Method.Name, instruction.FirstOperand, instruction.SecondOperand);
-            Console.WriteLine();
+            if (this.VerboseLevel.HasFlag(VirtualMachineVerboseLevel.ThreadInfo))
+            {
+                Console.WriteLine("thread {0}, priority {1}, tick {2}", this.currentThread, thread.Priority, this.TickElapsedSinceLastTimeSlice);
+            }
+        }
+
+        private void InstructionInfoLog(Instruction currentInstruction)
+        {
+            if (this.VerboseLevel.HasFlag(VirtualMachineVerboseLevel.InstructionInfo))
+            {
+                Console.WriteLine("{0} {1} {2}", InstructionMap[currentInstruction.OpCode].Method.Name, currentInstruction.FirstOperand, currentInstruction.SecondOperand);
+            }
+        }
+
+        public void RuntimeErrorLog(Instruction instruction, string errormsg)
+        {
+            if (this.VerboseLevel.HasFlag(VirtualMachineVerboseLevel.RuntimeError))
+            {
+                Console.WriteLine();
+                Console.WriteLine("Runtime error: " + errormsg);
+                Console.WriteLine("at line {0}: {1} {2} {3}", instruction.LineNumber, InstructionMap[instruction.OpCode].Method.Name, instruction.FirstOperand, instruction.SecondOperand);
+                Console.WriteLine();
+            }
+        }
+
+        private void LoadtimeErrorLog(Instruction instr, string v)
+        {
+            if (this.VerboseLevel.HasFlag(VirtualMachineVerboseLevel.LoadtimeError))
+            {
+                Console.WriteLine();
+                Console.Write(v);
+                Console.Write(": ");
+                Console.WriteLine("Undefined opcode: {0:X}", instr.OpCode);
+            }
         }
     }
 }

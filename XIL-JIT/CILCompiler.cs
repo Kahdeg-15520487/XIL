@@ -23,37 +23,37 @@ namespace XILtoCIL
 
         public CilCodeGenerator()
         {
-            labels = new List<(string label, int target)>();
-            program = new List<Instruction>();
-            stringTable = new List<string>();
-            libs = new Dictionary<string, int>();
+            this.labels = new List<(string label, int target)>();
+            this.program = new List<Instruction>();
+            this.stringTable = new List<string>();
+            this.libs = new Dictionary<string, int>();
         }
 
         public void AddInstruction(Instruction instruction)
         {
-            program.Add(instruction);
+            this.program.Add(instruction);
         }
 
         public void AddInstruction(int op, int op1, int op2, int lnb)
         {
-            program.Add(new Instruction(op, op1, op2, lnb));
+            this.program.Add(new Instruction(op, op1, op2, lnb));
         }
 
         public void AddJumpLabel(string label, int line)
         {
-            if (GetJumpLabel(label) == -1)
+            if (this.GetJumpLabel(label) == -1)
             {
-                labels.Add((label, line));
+                this.labels.Add((label, line));
             }
         }
 
         public int AddString(string str)
         {
-            int index = GetString(str);
+            int index = this.GetString(str);
             if (index == -1)
             {
-                stringTable.Add(str);
-                index = stringTable.Count - 1;
+                this.stringTable.Add(str);
+                index = this.stringTable.Count - 1;
             }
             return index;
         }
@@ -62,7 +62,7 @@ namespace XILtoCIL
         {
             try
             {
-                var jump = labels.First(j => j.label.Equals(label));
+                var jump = this.labels.First(j => j.label.Equals(label));
                 return jump.target;
             }
             catch (Exception)
@@ -73,7 +73,7 @@ namespace XILtoCIL
 
         public int GetString(string str)
         {
-            return stringTable.FindIndex(s => s.Equals(str));
+            return this.stringTable.FindIndex(s => s.Equals(str));
         }
 
         /// <summary>
@@ -82,11 +82,11 @@ namespace XILtoCIL
         /// <param name="lib"></param>
         public int AddLibrary(string lib)
         {
-            if (!libs.ContainsKey(lib))
+            if (!this.libs.ContainsKey(lib))
             {
-                libs.Add(lib, labels.Count);
+                this.libs.Add(lib, this.labels.Count);
             }
-            return libs.Count - 1;
+            return this.libs.Count - 1;
         }
 
         /// <summary>
@@ -96,13 +96,13 @@ namespace XILtoCIL
         /// <returns></returns>
         public int GetLibrary(string lib)
         {
-            return libs[lib];
+            return this.libs[lib];
         }
 
         public Program Emit()
         {
             //serialize program's bytecode
-            int[] instrs = Instruction.Serialize(program);
+            int[] instrs = Instruction.Serialize(this.program);
             //serialize program's stringtable
             string[] strs = this.stringTable.ToArray();
 
@@ -113,6 +113,7 @@ namespace XILtoCIL
         {
             DynamicMethod method = new DynamicMethod("xil_cil", typeof(int), null);
             ILGenerator ilgen = method.GetILGenerator();
+            StringBuilder asmSource = new StringBuilder();
 
             var stringTable = new string[this.stringTable.Count];
             for (int i = 0; i < stringTable.Length; i++)
@@ -124,14 +125,15 @@ namespace XILtoCIL
             var lookUpJumpTable = new Dictionary<int, int>();
             for (int i = 0; i < this.labels.Count; i++)
             {
-                jumpTable.Add(labels[i].target, ilgen.DefineLabel());
-                lookUpJumpTable.Add(i, labels[i].target);
+                jumpTable.Add(this.labels[i].target, ilgen.DefineLabel());
+                lookUpJumpTable.Add(i, this.labels[i].target);
             }
 
             //gen cil instruction based on given instruction list, jump table and string constant
-            for (int i = 0; i < program.Count; i++)
+            int instructionCount = this.program.Count;
+            for (int i = 0; i < this.program.Count; i++)
             {
-                var instr = program[i];
+                var instr = this.program[i];
                 ilgen.EmitWriteLine(instr.ToString());
 
                 if (jumpTable.ContainsKey(i))
@@ -140,16 +142,20 @@ namespace XILtoCIL
                     Console.WriteLine(i);
                 }
 
-                var a = ilgen.DeclareLocal(typeof(Int32));
-                var b = ilgen.DeclareLocal(typeof(Int32));
+                //some local register for easier thing
+                var a = ilgen.DeclareLocal(typeof(int));
+                var b = ilgen.DeclareLocal(typeof(int));
                 var c = ilgen.DeclareLocal(typeof(bool));
 
                 switch ((InstructionOPCode)instr.OpCode)
                 {
                     case InstructionOPCode.jmp:
                         {
-                            var target = jumpTable[lookUpJumpTable[instr.FirstOperand]];
+                            //var target = jumpTable[lookUpJumpTable[instr.FirstOperand]];
+                            var target = jumpTable[instr.FirstOperand];
                             ilgen.Emit(OpCodes.Br_S, target);
+                            //asmSource.AppendFormat("{1}| jmp {0}", instr.FirstOperand, i.ToString().PadLeft();
+                            //program.
                             //Console.WriteLine("jmp {0}", lookUpJumpTable[instr.param]);
                         }
                         break;
@@ -176,8 +182,10 @@ namespace XILtoCIL
                         break;
                     case InstructionOPCode.j1:
                         {
-                            var target = jumpTable[lookUpJumpTable[instr.FirstOperand]];
+                            //var target = jumpTable[lookUpJumpTable[instr.FirstOperand]];
+                            var target = jumpTable[instr.FirstOperand];
                             ilgen.Emit(OpCodes.Brtrue_S, target);
+                            asmSource.AppendFormat("j1 {0}", instr.FirstOperand);
                             //Console.WriteLine("jmp {0}", lookUpJumpTable[instr.param]);
                         }
                         break;
@@ -185,22 +193,26 @@ namespace XILtoCIL
                     case InstructionOPCode.yeet:
                         {
                             ilgen.Emit(OpCodes.Ldc_I4, instr.FirstOperand);
+                            asmSource.AppendFormat("push {0}", instr.FirstOperand);
                         }
                         break;
                     case InstructionOPCode.dup:
                         {
                             ilgen.Emit(OpCodes.Dup);
+                            asmSource.Append("dup");
                         }
                         break;
                     case InstructionOPCode.pop:
                         {
                             ilgen.Emit(OpCodes.Pop);
+                            asmSource.Append("pop");
                         }
                         break;
 
                     case InstructionOPCode.add:
                         {
                             ilgen.Emit(OpCodes.Add);
+                            asmSource.Append("add");
                         }
                         break;
 
@@ -232,8 +244,11 @@ namespace XILtoCIL
                         ilgen.Emit(OpCodes.Ret);
                         break;
                 }
+                asmSource.AppendLine();
             }
-
+            Console.WriteLine("===asm===");
+            Console.WriteLine(asmSource.ToString());
+            Console.WriteLine("===asm===");
             return (Func<int>)method.CreateDelegate(typeof(Func<int>));
         }
     }
