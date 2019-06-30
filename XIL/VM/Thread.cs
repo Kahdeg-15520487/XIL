@@ -66,42 +66,83 @@ namespace XIL.VM
         /// program length
         /// </summary>
         public int InstructionCount { get; private set; } = 0;
+        /// <summary>
+        /// exit code
+        /// </summary>
         public int ExitCode = 0;
+        /// <summary>
+        /// where to return jump
+        /// </summary>
         public int ReturnJump = 0;
+        /// <summary>
+        /// where to return function
+        /// </summary>
         public int FunctionReturn = 0;
         #endregion
 
         #region runtime info
+        /// <summary>
+        /// thread's priority
+        /// </summary>
         public readonly Priority Priority = Priority.Normal;
+        /// <summary>
+        /// thread's state
+        /// </summary>
         public ThreadState State = ThreadState.Running;
+        /// <summary>
+        /// has the thread been loaded with a program
+        /// </summary>
         public bool IsLoaded => instructions != null;
+        /// <summary>
+        /// is the thread running
+        /// </summary>
         public bool IsRunning { get; private set; } = false;
+        /// <summary>
+        /// has the thread done running
+        /// </summary>
         public bool IsDoneExecuting { get; private set; } = false;
+        /// <summary>
+        /// does the thread has a runtime error
+        /// </summary>
         public bool IsRuntimeError = false;
+        /// <summary>
+        /// runtime error's message
+        /// </summary>
         public string RuntimeErrorMessage = null;
         #endregion
 
-        public Thread(Priority priority = Priority.Normal)
-        {
+        /// <summary>
+        /// init an empty thread
+        /// </summary>
+        /// <param name="priority"></param>
+        public Thread(Priority priority = Priority.Normal) {
             Priority = priority;
             Init();
         }
 
-        public Thread(Instruction[] instrs, string[] strs, Priority priority = Priority.Normal)
-        {
+        /// <summary>
+        /// init a thread and load it with a program
+        /// </summary>
+        /// <param name="instrs"></param>
+        /// <param name="strs"></param>
+        /// <param name="priority"></param>
+        public Thread(Instruction[] instrs, string[] strs, Priority priority = Priority.Normal) {
             Priority = priority;
             LoadInstructions(instrs, strs);
             Init();
         }
 
-        private void Init()
-        {
+        private void Init() {
             stack = new Stack();
             fstack = new Stack<int>();
         }
 
-        public void LoadInstructions(Instruction[] instrs, string[] strs)
-        {
+        /// <summary>
+        /// load a program into a thread
+        /// </summary>
+        /// <param name="instrs"></param>
+        /// <param name="strs"></param>
+        public void LoadInstructions(Instruction[] instrs, string[] strs) {
             instructions = new Instruction[instrs.Length];
             Array.Copy(instrs, instructions, instrs.Length);
 
@@ -114,8 +155,12 @@ namespace XIL.VM
             IsDoneExecuting = false;
         }
 
-        public string GetString(int index)
-        {
+        /// <summary>
+        /// get a string from the thread's string table
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public string GetString(int index) {
             return index < stringTable.Length ? stringTable[index] : null;
         }
 
@@ -134,10 +179,8 @@ namespace XIL.VM
         /// Pop off tots and return it
         /// </summary>
         /// <returns>the poped value</returns>
-        public int Pop()
-        {
-            if (stack.Top == 0)
-            {
+        public int Pop() {
+            if (stack.Top == 0) {
                 throw new InvalidOperationException("Stack Empty");
             }
             return stack.Pop();
@@ -148,10 +191,8 @@ namespace XIL.VM
         /// </summary>
         /// <param name="value">the value to push</param>
         /// <returns>the pushed value</returns>
-        public int Push(int value)
-        {
-            if (stack.Top == stack.Size - 1)
-            {
+        public int Push(int value) {
+            if (stack.Top == stack.Size - 1) {
                 throw new InvalidOperationException("Stack Full");
             }
             stack.Push(value);
@@ -162,10 +203,8 @@ namespace XIL.VM
         /// peek the value on tots
         /// </summary>
         /// <returns>the value on tots</returns>
-        public int Peek()
-        {
-            if (stack.Top == 0)
-            {
+        public int Peek() {
+            if (stack.Top == 0) {
                 throw new InvalidOperationException("Stack Empty");
             }
             return stack.Peek();
@@ -176,14 +215,10 @@ namespace XIL.VM
         /// </summary>
         /// <param name="index"></param>
         /// <param name="value"></param>
-        public void Set(int index, int value)
-        {
-            if (index >= 0)
-            {
+        public void Set(int index, int value) {
+            if (index >= 0) {
                 stack.Set(index, value);
-            }
-            else
-            {
+            } else {
                 //todo relative stack index
 
             }
@@ -194,14 +229,10 @@ namespace XIL.VM
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public int Get(int index)
-        {
-            if (index >= 0)
-            {
+        public int Get(int index) {
+            if (index >= 0) {
                 return stack.Get(index);
-            }
-            else
-            {
+            } else {
                 //todo relative stack index
                 return stack.Get(stack.Top + index);
             }
@@ -211,28 +242,25 @@ namespace XIL.VM
         /// push an array on tots
         /// </summary>
         /// <param name="array">the array to be pushed</param>
-        public void PushArray(int[] array)
-        {
+        public void PushArray(int[] array) {
             stack.PushArray(array);
         }
 
+        // todo implement array access 
         /// <summary>
         /// pop an array from tots
         /// </summary>
         /// <param name="arrayIndex">where does the array start</param>
-        /// <param name="arraySize">what is the array's size</param>
-        //todo implement array access 
+        /// <param name="arraySize">what is the array's size</param>        
         /// <returns></returns>
-        public int[] PopArray(int arrayIndex, int arraySize)
-        {
+        public int[] PopArray(int arrayIndex, int arraySize) {
             return stack.PopArray(arrayIndex, arraySize);
         }
 
         /// <summary>
         /// clear the stack
         /// </summary>
-        public void Clear()
-        {
+        public void Clear() {
             stack.Clear();
         }
         #endregion
@@ -246,22 +274,19 @@ namespace XIL.VM
         /// Pop a function return address from stack
         /// </summary>
         /// <returns></returns>
-        public int PopF()
-        {
+        public int PopF() {
             return fstack.Pop();
         }
         /// <summary>
         /// Peek the top function return on stack
         /// </summary>
-        public int PeekF()
-        {
+        public int PeekF() {
             return fstack.Peek();
         }
         /// <summary>
         /// Push a function return address on stack
         /// </summary>
-        public void PushF(int f)
-        {
+        public void PushF(int f) {
             fstack.Push(f);
         }
         #endregion
@@ -278,28 +303,33 @@ namespace XIL.VM
         /// fetch the next instruction and advance the instruction pointer
         /// </summary>
         /// <returns>the next instruction</returns>
-        public Instruction FetchInstruction()
-        {
-            if (currentInstruction == InstructionCount)
-            {
+        public Instruction FetchInstruction() {
+            if (currentInstruction == InstructionCount) {
                 EndExecution();
                 return Instruction.Nop;
-            }
-            else
-            {
+            } else {
                 return instructions[currentInstruction++];
             }
         }
 
-        public void AppendInstruction(Instruction instr)
-        {
-
+        /// <summary>
+        /// append an instruction into the thread
+        /// Has not been implemented
+        /// for runtime modifying capability
+        /// </summary>
+        /// <param name="instr"></param>
+        public void AppendInstruction(Instruction instr) {
+            throw new NotImplementedException(nameof(AppendInstruction));
         }
 
-        public void SetInstruction(int index, Instruction instr)
-        {
-            if (index > InstructionCount - 1)
-            {
+        /// <summary>
+        /// modify an instruction
+        /// for runtime modifying capability
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="instr"></param>
+        public void SetInstruction(int index, Instruction instr) {
+            if (index > InstructionCount - 1) {
                 throw new IndexOutOfRangeException();
             }
             instructions[index] = instr;
@@ -309,16 +339,14 @@ namespace XIL.VM
         /// <summary>
         /// pause this thread
         /// </summary>
-        public void PauseExecution()
-        {
+        public void PauseExecution() {
             IsRunning = false;
         }
 
         /// <summary>
         /// end this thread
         /// </summary>
-        public void EndExecution()
-        {
+        public void EndExecution() {
             IsRunning = false;
             IsDoneExecuting = true;
             State = ThreadState.Done;
@@ -327,8 +355,7 @@ namespace XIL.VM
         /// <summary>
         /// raise a runtime error on this thread
         /// </summary>
-        public void RuntimeError(string errmsg)
-        {
+        public void RuntimeError(string errmsg) {
             IsRuntimeError = true;
             RuntimeErrorMessage = errmsg;
             IsRunning = false;

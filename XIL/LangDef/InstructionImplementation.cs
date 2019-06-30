@@ -12,8 +12,7 @@ namespace XIL.LangDef
         /// <summary>
         /// operation code
         /// </summary>
-		public int OpCode
-        {
+		public int OpCode {
             get { return opcode; }
         }
 
@@ -21,8 +20,7 @@ namespace XIL.LangDef
         /// <summary>
         /// operation code's mnemonic
         /// </summary>
-		public string OpName
-        {
+		public string OpName {
             get { return opname; }
         }
 
@@ -30,8 +28,7 @@ namespace XIL.LangDef
         /// <summary>
         /// the library that this is instruction belong to
         /// </summary>
-        public string Library
-        {
+        public string Library {
             get { return library; }
         }
 
@@ -40,8 +37,8 @@ namespace XIL.LangDef
         /// </summary>
         /// <param name="opcode"></param>
         /// <param name="opname"></param>
-		public InstructionAttribute(int opcode, string opname = "", string lib = null)
-        {
+        /// <param name="lib"></param>
+        public InstructionAttribute(int opcode, string opname = "", string lib = null) {
             this.opcode = opcode;
             this.opname = opname;
             this.library = lib;
@@ -51,15 +48,17 @@ namespace XIL.LangDef
         /// </summary>
         /// <param name="opcode"></param>
         /// <param name="opname"></param>
-		public InstructionAttribute(InstructionOPCode opcode, string opname = "")
-        {
+		public InstructionAttribute(InstructionOPCode opcode, string opname = "") {
             this.opcode = (int)opcode;
             this.opname = opname;
             this.library = "core";
         }
 
-        public override string ToString()
-        {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() {
             return string.Format("0x{0:X} : {1}", opcode, opname);
         }
     }

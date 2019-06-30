@@ -13,48 +13,43 @@ namespace testconsole
 {
     class CILCompile
     {
-        public static int compile(string path = null, string save = null)
-        {
+        public static int compile(string path = null, string save = null, bool gendll = false) {
             Console.WriteLine("compiling {0}", path is null ? "null" : path);
-            if (path is null)
-            {
+            if (path is null) {
                 Console.WriteLine("please enter path");
                 return 1;
             }
-            if (!File.Exists(path))
-            {
+            if (!File.Exists(path)) {
                 Console.WriteLine("path does not exist");
                 return 2;
             }
-            var compiler = new Assembler(Program.Libs.ToArray());
-            var sourcecode = File.ReadAllText(path) + Environment.NewLine;
+            Assembler compiler = new Assembler(Program.Libs.ToArray());
+            string sourcecode = File.ReadAllText(path) + Environment.NewLine;
 
             Preprocessor preprocessor = new Preprocessor();
             sourcecode = preprocessor.Process(sourcecode);
-            if (!preprocessor.IsSuccess)
-            {
+            if (!preprocessor.IsSuccess) {
                 Console.WriteLine("error with preprocessor");
                 return 3;
             }
 
             CilCodeGenerator codegen = new CilCodeGenerator();
 
-            var result = compiler.Compile(sourcecode, codegen);
+            CompileResult result = compiler.Compile(sourcecode, codegen);
             Console.WriteLine(result.Success ? "sucess" : "false" + result.Message);
-            if (result.Success)
-            {
+            if (result.Success) {
                 string savename;
-                if (save is null)
-                {
+                if (save is null) {
                     savename = Path.GetDirectoryName(Path.GetFullPath(path)) + '\\' + Path.GetFileNameWithoutExtension(path) + ".xse";
-                }
-                else
-                {
+                } else {
                     savename = save;
                 }
                 Console.WriteLine(Path.GetFullPath(savename));
                 Func<int> program = codegen.EmitDynamicMethod();
                 Console.WriteLine(program?.Invoke());
+                if (gendll) {
+                    codegen.EmitAssembly();
+                }
             }
             return 0;
         }

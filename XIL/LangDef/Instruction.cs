@@ -19,13 +19,11 @@ namespace XIL.LangDef
         /// </summary>
         /// <param name="program"></param>
         /// <returns></returns>
-        public static IEnumerable<Instruction> Deserialize(int[] program)
-        {
+        public static IEnumerable<Instruction> Deserialize(int[] program) {
             //todo define program's binary layout
             //todo define program's word's length
             int length = program.GetLength(0) / Instruction.InstructionByteLength;
-            for (int i = 0; i < length; i++)
-            {
+            for (int i = 0;i < length;i++) {
                 yield return new Instruction(program[i * Instruction.InstructionByteLength], program[i * Instruction.InstructionByteLength + 1], program[i * Instruction.InstructionByteLength + 2], program[i * Instruction.InstructionByteLength + 3]);
             }
         }
@@ -34,14 +32,12 @@ namespace XIL.LangDef
         /// </summary>
         /// <param name="program"></param>
         /// <returns></returns>
-        public static int[] Serialize(List<Instruction> program)
-        {
+        public static int[] Serialize(List<Instruction> program) {
             int length = program.Count;
             int[] result = new int[length * Instruction.InstructionByteLength];
 
             Instruction instr;
-            for (int i = 0; i < length; i++)
-            {
+            for (int i = 0;i < length;i++) {
                 instr = program[i];
                 result[i * Instruction.InstructionByteLength] = instr.OpCode;
                 result[i * Instruction.InstructionByteLength + 1] = instr.FirstOperand;
@@ -79,8 +75,7 @@ namespace XIL.LangDef
         /// <param name="op1"></param>
         /// <param name="op2"></param>
         /// <param name="lnb"></param>
-        public Instruction(InstructionOPCode oc, int op1 = 0, int op2 = 0, int lnb = -1)
-        {
+        public Instruction(InstructionOPCode oc, int op1 = 0, int op2 = 0, int lnb = -1) {
             OpCode = (int)oc;
             FirstOperand = op1;
             SecondOperand = op2;
@@ -95,8 +90,7 @@ namespace XIL.LangDef
         /// <param name="op2"></param>
         /// <param name="lnb"></param>
         /// <param name="libindex"></param>
-        public Instruction(int oc, int op1 = 0, int op2 = 0, int lnb = 0, int libindex = 0)
-        {
+        public Instruction(int oc, int op1 = 0, int op2 = 0, int lnb = 0, int libindex = 0) {
             OpCode = oc;
             FirstOperand = op1;
             SecondOperand = op2;
@@ -113,8 +107,11 @@ namespace XIL.LangDef
         /// </summary>
         public static Instruction Exit => new Instruction(InstructionOPCode.exit);
 
-        public override string ToString()
-        {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() {
             return string.Format("{3}: 0x{0:X4} {1} {2}", OpCode, FirstOperand, SecondOperand, LineNumber);
         }
     }
