@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>XILPreprocessor</name>
+    </assembly>
+    <members>
+        <member name="M:XIL.Assembler.Preprocessor.Parser.Factor">
+            <summary>
+            factor : INTERGER | IDENT | LPAREN EXPR RPAREN
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:XIL.Assembler.Preprocessor.Parser.PrecendenceLevel1">
+            <summary>
+            precendencelevel1 : factor (EXP factor) *
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:XIL.Assembler.Preprocessor.Parser.PrecendenceLevel2">
+            <summary>
+            precendencelevel2 : precendencelevel1 ((MUL | DIV) precendencelevel1) *
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:XIL.Assembler.Preprocessor.Parser.PrecendenceLevel3">
+            <summary>
+            precendencelevel3 : precendencelevel1 ((PLUS | MINUS) precendencelevel1) *
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:XIL.Assembler.Preprocessor.Parser.Assignment">
+            <summary>
+            assignment : IDENT ASSIGN expr
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:XIL.Assembler.Preprocessor.Parser.Expression">
+            <summary>
+            expression : precendencelevel3 | assignment
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

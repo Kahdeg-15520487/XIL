@@ -36,12 +36,12 @@ namespace XIL.Assembler.Preprocessor
             }
         }
 
+        /// <summary>
+        /// factor : INTERGER | IDENT | LPAREN EXPR RPAREN
+        /// </summary>
+        /// <returns></returns>
         ASTNode Factor()
         {
-            /*
-             * factor : INTERGER | IDENT | LPAREN EXPR RPAREN
-             */
-
             var token = current_token;
 
             switch (token.type)
@@ -63,12 +63,12 @@ namespace XIL.Assembler.Preprocessor
             return null;
         }
 
+        /// <summary>
+        /// precendencelevel1 : factor (EXP factor) *
+        /// </summary>
+        /// <returns></returns>
         ASTNode PrecendenceLevel1()
         {
-            /*
-             * precendencelevel1 : factor (EXP factor) *
-             */
-
             var node = Factor();
 
             while (current_token.type == TokenType.EXPONENT)
@@ -87,12 +87,12 @@ namespace XIL.Assembler.Preprocessor
             return node;
         }
 
+        /// <summary>
+        /// precendencelevel2 : precendencelevel1 ((MUL | DIV) precendencelevel1) *
+        /// </summary>
+        /// <returns></returns>
         ASTNode PrecendenceLevel2()
         {
-            /*
-             * precendencelevel2 : precendencelevel1 ((MUL | DIV) precendencelevel1) *
-             */
-
             var node = PrecendenceLevel1();
 
             while (current_token.type == TokenType.MULTIPLY ||
@@ -115,12 +115,12 @@ namespace XIL.Assembler.Preprocessor
             return node;
         }
 
+        /// <summary>
+        /// precendencelevel3 : precendencelevel1 ((PLUS | MINUS) precendencelevel1) *
+        /// </summary>
+        /// <returns></returns>
         ASTNode PrecendenceLevel3()
         {
-            /*
-             * precendencelevel3 : precendencelevel1 ((PLUS | MINUS) precendencelevel1) *
-             */
-
             var node = PrecendenceLevel2();
 
             while (current_token.type == TokenType.PLUS ||
@@ -142,12 +142,12 @@ namespace XIL.Assembler.Preprocessor
             return node;
         }
 
+        /// <summary>
+        /// assignment : IDENT ASSIGN expr
+        /// </summary>
+        /// <returns></returns>
         ASTNode Assignment()
         {
-            /*
-             * assignment : IDENT ASSIGN expr
-             */
-
             var token = current_token;
             Eat(TokenType.IDENT);
             var ident = new Operand(token);
@@ -156,12 +156,12 @@ namespace XIL.Assembler.Preprocessor
             return new Assignment(ident, expr);
         }
 
+        /// <summary>
+        /// expression : precendencelevel3 | assignment
+        /// </summary>
+        /// <returns></returns>
         ASTNode Expression()
         {
-            /*
-             * expression : precendencelevel3 | assignment
-             */
-             
             if (lexer.PeekNextToken().type == TokenType.ASSIGN)
             {
                 return Assignment();
