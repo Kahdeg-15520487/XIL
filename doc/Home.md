@@ -1,30 +1,29 @@
 # References
 
-## [](.md)
+## []()
 
-- [`CoreInstruction`](CoreInstruction.md#coreinstruction)
+- [`CoreInstruction`](#coreinstruction)
 
-## [XIL.Assembler](XIL.Assembler.md)
+## [XIL.Assembler](XIL.Assembler)
 
-- [`Assembler`](XIL.Assembler.md#assembler)
-- [`CodeGenerator`](XIL.Assembler.md#codegenerator)
-- [`Lexer`](XIL.Assembler.md#lexer)
-- [`Parser`](XIL.Assembler.md#parser)
-- [`Token`](XIL.Assembler.md#token)
-- [`TokenType`](XIL.Assembler.md#tokentype)
-- [`VariableScope`](XIL.Assembler.md#variablescope)
+- [`Assembler`](XIL.Assembler#assembler)
+- [`CodeGenerator`](XIL.Assembler#codegenerator)
+- [`CompileResult`](XIL.Assembler#compileresult)
+- [`ICodeGenerator`](XIL.Assembler#icodegenerator)
 
-## [XIL.LangDef](XIL.LangDef.md)
+## [XIL.LangDef](XIL.LangDef)
 
-- [`IInstructionImplementation`](XIL.LangDef.md#iinstructionimplementation)
-- [`Instruction`](XIL.LangDef.md#instruction)
-- [`InstructionAttribute`](XIL.LangDef.md#instructionattribute)
-- [`InstructionOPCode`](XIL.LangDef.md#instructionopcode)
+- [`IInstructionImplementation`](XIL.LangDef#iinstructionimplementation)
+- [`Instruction`](XIL.LangDef#instruction)
+- [`InstructionAttribute`](XIL.LangDef#instructionattribute)
+- [`InstructionOPCode`](XIL.LangDef#instructionopcode)
 
-## [XIL.VM](XIL.VM.md)
+## [XIL.VM](XIL.VM)
 
-- [`Priority`](XIL.VM.md#priority)
-- [`Program`](XIL.VM.md#program)
-- [`Thread`](XIL.VM.md#thread)
-- [`VirtualMachine`](XIL.VM.md#virtualmachine)
+- [`Priority`](XIL.VM#priority)
+- [`Program`](XIL.VM#program)
+- [`Thread`](XIL.VM#thread)
+- [`ThreadState`](XIL.VM#threadstate)
+- [`VirtualMachine`](XIL.VM#virtualmachine)
+- [`VirtualMachineVerboseLevel`](XIL.VM#virtualmachineverboselevel)
 
