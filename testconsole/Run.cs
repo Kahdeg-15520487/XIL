@@ -45,10 +45,7 @@ namespace testconsole
                     return 2;
                 }
             }
-            var vm = new VirtualMachine(Program.Libs.ToArray())
-            {
-                VerboseLevel = (VirtualMachineVerboseLevel)verbosity
-            };
+            var vm = new VirtualMachine((VirtualMachineVerboseLevel)verbosity, Program.Libs.ToArray());
             VirtualMachine.RandomNumberGenerator = new Random(0);
             foreach (var path in paths)
             {

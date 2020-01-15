@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using XIL.Assembler;
 using XIL.LangDef;
 using XIL.VM;
+using XIL.JIT;
 
 namespace XILtoCIL
 {
@@ -119,6 +120,7 @@ namespace XILtoCIL
                     AssemblyBuilderAccess.Save);
             ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule(assembly.Name, assembly.Name + ".exe");
             TypeBuilder typeBuilder = moduleBuilder.DefineType("Program", TypeAttributes.Public);
+            typeBuilder.DefineField("", typeof(HostFunctionCollection), FieldAttributes.Static | FieldAttributes.Private);
             //Type[] parameters = new Type[] { typeof(string[]) };
             MethodBuilder methodBuilder = typeBuilder.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static, typeof(int), null);
             ILGenerator ilgen = methodBuilder.GetILGenerator();

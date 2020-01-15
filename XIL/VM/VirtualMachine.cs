@@ -33,6 +33,10 @@ namespace XIL.VM
         /// log thead information
         /// </summary>
         ThreadInfo = 8,
+        /// <summary>
+        /// log loadtime information
+        /// </summary>
+        LoadtimeInfo = 16,
     }
 
     /// <summary>
@@ -50,6 +54,8 @@ namespace XIL.VM
         /// a list of instruction's implementation
         /// </summary>
         public static Dictionary<int, InstructionAction> InstructionMap = null;
+        public static Dictionary<int, InstructionAttribute> InstructionMetaDataMap = null;
+
         /// <summary>
         /// a list of loaded instruction library's name
         /// </summary>
@@ -73,11 +79,13 @@ namespace XIL.VM
         /// time keeping
         /// </summary>
         private int TickElapsedSinceLastTimeSlice;
+
         /// <summary>
         /// tick an update
         /// </summary>
         /// <returns></returns>
-        public int Tick() {
+        public int Tick()
+        {
             return ++this.TickElapsedSinceLastTimeSlice;
         }
 
@@ -85,29 +93,46 @@ namespace XIL.VM
         /// init a vm with a list of instruction implementation
         /// </summary>
         /// <param name="instructionImplementations"></param>
-        public VirtualMachine(params IInstructionImplementation[] instructionImplementations) {
-            if (InstructionMap == null) {
+        public VirtualMachine(VirtualMachineVerboseLevel verboseLevel = VirtualMachineVerboseLevel.LoadtimeError | VirtualMachineVerboseLevel.RuntimeError, params IInstructionImplementation[] instructionImplementations)
+        {
+            this.VerboseLevel = verboseLevel;
+            if (InstructionMap == null)
+            {
                 this.InitInstructionMap(instructionImplementations);
             }
             this.Init();
         }
 
-        private void InitInstructionMap(IInstructionImplementation[] instructionImplementations) {
+        private void InitInstructionMap(IInstructionImplementation[] instructionImplementations)
+        {
             InstructionMap = new Dictionary<int, InstructionAction>();
+            InstructionMetaDataMap = new Dictionary<int, InstructionAttribute>();
             LoadedLibrary = new List<string>();
-            foreach (IInstructionImplementation instrImplm in instructionImplementations) {
+            foreach (IInstructionImplementation instrImplm in instructionImplementations)
+            {
                 LoadedLibrary.Add(instrImplm.GetType().Name);
 
                 IEnumerable<MethodInfo> methods = instrImplm.GetType().GetTypeInfo().GetMethods()
                   .Where(m => m.GetCustomAttributes(typeof(InstructionAttribute), false).Count() > 0);
 
-                foreach (MethodInfo method in methods) {
+                foreach (MethodInfo method in methods)
+                {
                     //get instruction info
                     InstructionAttribute attr = method.GetCustomAttribute<InstructionAttribute>();
                     //get delegate from method
                     InstructionAction action = (InstructionAction)method.CreateDelegate(typeof(InstructionAction), instrImplm);
                     //map said delegate to instruction
                     InstructionMap.Add(attr.OpCode, action);
+                    InstructionMetaDataMap.Add(attr.OpCode, attr);
+                }
+            }
+
+            if (this.VerboseLevel.HasFlag(VirtualMachineVerboseLevel.LoadtimeInfo))
+            {
+                foreach (KeyValuePair<int, InstructionAction> mappedInstruction in InstructionMap.ToList().OrderBy(kvp => kvp.Key))
+                {
+                    InstructionAttribute instrMetaData = InstructionMetaDataMap[mappedInstruction.Key];
+                    Console.WriteLine("loaded \"{0}\" from {1} lib", instrMetaData, instrMetaData.Library);
                 }
             }
         }
@@ -117,14 +142,17 @@ namespace XIL.VM
         /// </summary>
         /// <param name="libname"></param>
         /// <returns></returns>
-        public static bool ContainLibrary(string libname) {
+        public static bool ContainLibrary(string libname)
+        {
             return LoadedLibrary.Contains(libname);
         }
 
-        private void Init() {
+        private void Init()
+        {
             this.threads = new List<Thread>();
 
-            if (RandomNumberGenerator != null) {
+            if (RandomNumberGenerator != null)
+            {
                 RandomNumberGenerator = new Random();
             }
 
@@ -138,8 +166,10 @@ namespace XIL.VM
         /// <param name="instrs"></param>
         /// <param name="strs"></param>
         /// <returns></returns>
-        public bool LoadProgram(Instruction[] instrs, string[] strs) {
-            if (!this.ValidateProgram(instrs)) {
+        public bool LoadProgram(Instruction[] instrs, string[] strs)
+        {
+            if (!this.ValidateProgram(instrs))
+            {
                 return false;
             }
             this.threads.Add(new Thread(instrs, strs));
@@ -147,10 +177,13 @@ namespace XIL.VM
             return true;
         }
 
-        private bool ValidateProgram(Instruction[] instrs) {
+        private bool ValidateProgram(Instruction[] instrs)
+        {
             bool isOK = true;
-            foreach (Instruction instr in instrs) {
-                if (!InstructionMap.ContainsKey(instr.OpCode)) {
+            foreach (Instruction instr in instrs)
+            {
+                if (!InstructionMap.ContainsKey(instr.OpCode))
+                {
                     isOK = false;
                     this.LoadtimeErrorLog(instr, "Program contain undefined opcode");
                 }
@@ -158,37 +191,47 @@ namespace XIL.VM
             return isOK;
         }
 
-        private bool GetNextThread() {
+        private bool GetNextThread()
+        {
             int ct = this.currentThread;
-            do {
+            do
+            {
                 this.currentThread++;
                 this.currentThread = Wrap(this.currentThread, 0, this.threads.Count);
-                if (this.currentThread == ct) {
+                if (this.currentThread == ct)
+                {
                     return false;
                 }
             } while (this.threads[this.currentThread].State != ThreadState.Running);
             return true;
         }
 
-        static int Wrap(int i, int min, int max) {
+        static int Wrap(int i, int min, int max)
+        {
             return i % max + min;
         }
 
 
-        private Instruction FetchInstruction(Thread thread) {
-            if (thread.currentInstruction == thread.InstructionCount) {
+        private Instruction FetchInstruction(Thread thread)
+        {
+            if (thread.currentInstruction == thread.InstructionCount)
+            {
                 thread.EndExecution();
                 return Instruction.Exit;
-            } else {
+            }
+            else
+            {
                 return thread[thread.currentInstruction++];
             }
         }
 
-        private bool IsAllThreadDone() {
+        private bool IsAllThreadDone()
+        {
             return this.threads.All(t => t.State == ThreadState.Done);
         }
 
-        private bool IsCurrentThreadDoneOrTimeOut() {
+        private bool IsCurrentThreadDoneOrTimeOut()
+        {
             return this.threads[this.currentThread].State == ThreadState.Done
                 || this.TickElapsedSinceLastTimeSlice >= (int)this.threads[this.currentThread].Priority;
         }
@@ -196,15 +239,19 @@ namespace XIL.VM
         /// <summary>
         /// run the virtual machine synchronously
         /// </summary>
-        public void Run() {
+        public void Run()
+        {
             //Thread thread = GetNextThread();
 
-            while (true) {
-                if (this.IsAllThreadDone()) {
+            while (true)
+            {
+                if (this.IsAllThreadDone())
+                {
                     break;
                 }
 
-                if (this.IsCurrentThreadDoneOrTimeOut()) {
+                if (this.IsCurrentThreadDoneOrTimeOut())
+                {
                     this.TickElapsedSinceLastTimeSlice = 0;
                     this.GetNextThread();
                 }
@@ -221,7 +268,8 @@ namespace XIL.VM
                     this.InstructionInfoLog(currentInstruction);
                     InstructionMap[currentInstruction.OpCode].Invoke(thread, currentInstruction.FirstOperand, currentInstruction.SecondOperand);
 
-                    if (thread.IsRuntimeError) {
+                    if (thread.IsRuntimeError)
+                    {
                         this.RuntimeErrorLog(currentInstruction, thread.RuntimeErrorMessage);
                     }
                 }
@@ -229,20 +277,26 @@ namespace XIL.VM
             }
         }
 
-        private void ThreadInfoLog(Thread thread) {
-            if (this.VerboseLevel.HasFlag(VirtualMachineVerboseLevel.ThreadInfo)) {
+        private void ThreadInfoLog(Thread thread)
+        {
+            if (this.VerboseLevel.HasFlag(VirtualMachineVerboseLevel.ThreadInfo))
+            {
                 Console.WriteLine("thread {0}, priority {1}, tick {2}", this.currentThread, thread.Priority, this.TickElapsedSinceLastTimeSlice);
             }
         }
 
-        private void InstructionInfoLog(Instruction currentInstruction) {
-            if (this.VerboseLevel.HasFlag(VirtualMachineVerboseLevel.InstructionInfo)) {
+        private void InstructionInfoLog(Instruction currentInstruction)
+        {
+            if (this.VerboseLevel.HasFlag(VirtualMachineVerboseLevel.InstructionInfo))
+            {
                 Console.WriteLine("{0} {1} {2}", InstructionMap[currentInstruction.OpCode].Method.Name, currentInstruction.FirstOperand, currentInstruction.SecondOperand);
             }
         }
 
-        private void RuntimeErrorLog(Instruction instruction, string errormsg) {
-            if (this.VerboseLevel.HasFlag(VirtualMachineVerboseLevel.RuntimeError)) {
+        private void RuntimeErrorLog(Instruction instruction, string errormsg)
+        {
+            if (this.VerboseLevel.HasFlag(VirtualMachineVerboseLevel.RuntimeError))
+            {
                 Console.WriteLine();
                 Console.WriteLine("Runtime error: " + errormsg);
                 Console.WriteLine("at line {0}: {1} {2} {3}", instruction.LineNumber, InstructionMap[instruction.OpCode].Method.Name, instruction.FirstOperand, instruction.SecondOperand);
@@ -250,8 +304,10 @@ namespace XIL.VM
             }
         }
 
-        private void LoadtimeErrorLog(Instruction instr, string v) {
-            if (this.VerboseLevel.HasFlag(VirtualMachineVerboseLevel.LoadtimeError)) {
+        private void LoadtimeErrorLog(Instruction instr, string v)
+        {
+            if (this.VerboseLevel.HasFlag(VirtualMachineVerboseLevel.LoadtimeError))
+            {
                 Console.WriteLine();
                 Console.Write(v);
                 Console.Write(": ");
