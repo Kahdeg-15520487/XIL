@@ -230,6 +230,11 @@
         /// req &lt;library's name&gt; <para />
         /// check VM for certain library
         /// </summary>
-        req
+        req,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        host
     }
 }

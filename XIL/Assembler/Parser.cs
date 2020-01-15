@@ -18,46 +18,55 @@ namespace XIL.Assembler
 
         private VariableScope currentScope;
         private static Dictionary<string, int> instructionMap = null;
+        private static Dictionary<string, InstructionAttribute> instructionMetaDataMap;
 
         internal Parser(Lexer lexer, ICodeGenerator codegen, params IInstructionImplementation[] instructionImplementations)
         {
             if (instructionMap == null)
             {
-                InitInstructionMap(instructionImplementations);
+                this.InitInstructionMap(instructionImplementations);
             }
 
-            Lexer = lexer;
-            GlobalScope = new VariableScope();
-            currentScope = GlobalScope;
-            CodeGen = codegen;
-            CurrentToken = Lexer.GetNextToken();
-            InstructionCounter = 0;
+            this.Lexer = lexer;
+            this.GlobalScope = new VariableScope();
+            this.currentScope = this.GlobalScope;
+            this.CodeGen = codegen;
+            this.CurrentToken = this.Lexer.GetNextToken();
+            this.InstructionCounter = 0;
 
-            linePrettyPrint = new StringBuilder();
-            linePrettyPrint.AppendFormat("line {0}: ", (Lexer.current_line + 1).ToString().PadLeft(5));
+            this.linePrettyPrint = new StringBuilder();
+            this.linePrettyPrint.AppendFormat("line {0}: ", (this.Lexer.current_line + 1).ToString().PadLeft(5));
         }
 
         private void InitInstructionMap(params IInstructionImplementation[] instructionImplementations)
         {
             instructionMap = new Dictionary<string, int>();
-            foreach (var instrImplm in instructionImplementations)
+            instructionMetaDataMap = new Dictionary<string, InstructionAttribute>();
+            foreach (IInstructionImplementation instrImplm in instructionImplementations)
             {
-                var methods = instrImplm.GetType().GetTypeInfo().GetMethods()
+                IEnumerable<MethodInfo> methods = instrImplm.GetType().GetTypeInfo().GetMethods()
                   .Where(m => m.GetCustomAttributes(typeof(InstructionAttribute), false).Count() > 0);
 
-                foreach (var method in methods)
+                foreach (MethodInfo method in methods)
                 {
                     //get instruction info
-                    var attr = method.GetCustomAttribute<InstructionAttribute>();
+                    InstructionAttribute attr = method.GetCustomAttribute<InstructionAttribute>();
                     //map said delegate to instruction
                     instructionMap.Add(attr.OpName, attr.OpCode);
+                    instructionMetaDataMap.Add(attr.OpName, attr);
                 }
+            }
+
+            foreach (KeyValuePair<string, int> mappedInstruction in instructionMap)
+            {
+                InstructionAttribute instrMetaData = instructionMetaDataMap[mappedInstruction.Key];
+                Console.WriteLine("loaded \"{0}\" from {1} lib", instrMetaData, instrMetaData.Library);
             }
         }
 
         void Error(TokenType expecting)
         {
-            throw new Exception(string.Format("Invalid syntax: unexpected {0} at line {1}, expecting {2}", CurrentToken, Lexer.current_line + 1, expecting));
+            throw new Exception(string.Format("Invalid syntax: unexpected {0} at line {1}, expecting {2}", this.CurrentToken, this.Lexer.current_line + 1, expecting));
         }
 
         StringBuilder linePrettyPrint;
@@ -65,24 +74,27 @@ namespace XIL.Assembler
 
         void Eat(TokenType token_type)
         {
-            if (token_type == TokenType.ANY || CurrentToken.tokenType == token_type)
+            if (token_type == TokenType.ANY || this.CurrentToken.tokenType == token_type)
             {
-                if (IsPrettyPrint)
+                if (this.IsPrettyPrint)
+                {
                     if (token_type == TokenType.NEWLINE)
                     {
-                        Console.WriteLine(linePrettyPrint.ToString());
-                        linePrettyPrint.Clear();
-                        linePrettyPrint.AppendFormat("line {0}: ", (Lexer.current_line + 1).ToString().PadLeft(5));
+                        Console.WriteLine(this.linePrettyPrint.ToString());
+                        this.linePrettyPrint.Clear();
+                        this.linePrettyPrint.AppendFormat("line {0}: ", (this.Lexer.current_line + 1).ToString().PadLeft(5));
                     }
                     else
                     {
-                        linePrettyPrint.Append(CurrentToken + " ");
+                        this.linePrettyPrint.Append(this.CurrentToken + " ");
                     }
-                CurrentToken = Lexer.GetNextToken();
+                }
+
+                this.CurrentToken = this.Lexer.GetNextToken();
             }
             else
             {
-                Error(token_type);
+                this.Error(token_type);
             }
         }
 
@@ -93,13 +105,13 @@ namespace XIL.Assembler
         {
             StringBuilder output = new StringBuilder();
 
-            var token = CurrentToken;
-            Eat(TokenType.LABEL);
-            var label = token.lexeme.Remove(token.lexeme.IndexOf(':'));
-            CodeGen.AddJumpLabel(label, InstructionCounter);
+            Token token = this.CurrentToken;
+            this.Eat(TokenType.LABEL);
+            string label = token.lexeme.Remove(token.lexeme.IndexOf(':'));
+            this.CodeGen.AddJumpLabel(label, this.InstructionCounter);
             output.Append(token.lexeme);
 
-            Eat(TokenType.NEWLINE);
+            this.Eat(TokenType.NEWLINE);
 
             return output.ToString();
         }
@@ -114,14 +126,14 @@ namespace XIL.Assembler
             int op1 = 0;
             int op2 = 0;
 
-            var token = CurrentToken;
+            Token token = this.CurrentToken;
             output.Append(token.lexeme);
-            Eat(TokenType.IDENT);
+            this.Eat(TokenType.IDENT);
 
             //todo throw syntax error on unknown opcode
             opcode = instructionMap[token.lexeme];
 
-            if (CurrentToken.tokenType != TokenType.EOF)
+            if (this.CurrentToken.tokenType != TokenType.EOF)
             {
                 //todo typecheck
                 //output.Append(type_check(instr.opcode, instr));
@@ -129,65 +141,65 @@ namespace XIL.Assembler
 
             //parse operands
             //parse op1
-            if (CurrentToken.tokenType != TokenType.NEWLINE)
+            if (this.CurrentToken.tokenType != TokenType.NEWLINE)
             {
-                switch (CurrentToken.tokenType)
+                switch (this.CurrentToken.tokenType)
                 {
                     case TokenType.INT:
-                        op1 = int.Parse(CurrentToken.lexeme);
-                        Eat(TokenType.INT);
+                        op1 = int.Parse(this.CurrentToken.lexeme);
+                        this.Eat(TokenType.INT);
                         break;
                     case TokenType.STRING:
-                        op1 = CodeGen.AddString(CurrentToken.lexeme);
-                        Eat(TokenType.STRING);
+                        op1 = this.CodeGen.AddString(this.CurrentToken.lexeme);
+                        this.Eat(TokenType.STRING);
                         break;
                     case TokenType.BOOL:
-                        op1 = bool.Parse(CurrentToken.lexeme) ? 1 : 0;
-                        Eat(TokenType.BOOL);
+                        op1 = bool.Parse(this.CurrentToken.lexeme) ? 1 : 0;
+                        this.Eat(TokenType.BOOL);
                         break;
                     case TokenType.VAR:
-                        op1 = currentScope[CurrentToken.lexeme];
-                        Eat(TokenType.VAR);
+                        op1 = this.currentScope[this.CurrentToken.lexeme];
+                        this.Eat(TokenType.VAR);
                         break;
                     case TokenType.IDENT:
-                        op1 = CodeGen.GetJumpLabel(CurrentToken.lexeme);
-                        Eat(TokenType.IDENT);
+                        op1 = this.CodeGen.GetJumpLabel(this.CurrentToken.lexeme);
+                        this.Eat(TokenType.IDENT);
                         break;
                 }
                 output.AppendFormat(" : {0}", op1);
             }
             //parse op2
-            if (CurrentToken.tokenType != TokenType.NEWLINE)
+            if (this.CurrentToken.tokenType != TokenType.NEWLINE)
             {
-                switch (CurrentToken.tokenType)
+                switch (this.CurrentToken.tokenType)
                 {
                     case TokenType.INT:
-                        op2 = int.Parse(CurrentToken.lexeme);
-                        Eat(TokenType.INT);
+                        op2 = int.Parse(this.CurrentToken.lexeme);
+                        this.Eat(TokenType.INT);
                         break;
                     case TokenType.STRING:
-                        op2 = CodeGen.AddString(CurrentToken.lexeme);
-                        Eat(TokenType.STRING);
+                        op2 = this.CodeGen.AddString(this.CurrentToken.lexeme);
+                        this.Eat(TokenType.STRING);
                         break;
                     case TokenType.BOOL:
-                        op2 = bool.Parse(CurrentToken.lexeme) ? 1 : 0;
-                        Eat(TokenType.BOOL);
+                        op2 = bool.Parse(this.CurrentToken.lexeme) ? 1 : 0;
+                        this.Eat(TokenType.BOOL);
                         break;
                     case TokenType.VAR:
-                        op2 = currentScope[CurrentToken.lexeme];
-                        Eat(TokenType.VAR);
+                        op2 = this.currentScope[this.CurrentToken.lexeme];
+                        this.Eat(TokenType.VAR);
                         break;
                     case TokenType.IDENT:
-                        op2 = CodeGen.GetJumpLabel(CurrentToken.lexeme);
-                        Eat(TokenType.IDENT);
+                        op2 = this.CodeGen.GetJumpLabel(this.CurrentToken.lexeme);
+                        this.Eat(TokenType.IDENT);
                         break;
                 }
                 output.AppendFormat(" {0}", op2);
             }
 
-            Eat(TokenType.NEWLINE);
+            this.Eat(TokenType.NEWLINE);
 
-            CodeGen.AddInstruction(opcode, op1, op2, Lexer.current_line);
+            this.CodeGen.AddInstruction(opcode, op1, op2, this.Lexer.current_line);
             return output.ToString();
         }
 
@@ -195,12 +207,12 @@ namespace XIL.Assembler
         {
             StringBuilder output = new StringBuilder();
 
-            while (CurrentToken.tokenType != TokenType.EOF)
+            while (this.CurrentToken.tokenType != TokenType.EOF)
             {
-                switch (CurrentToken.tokenType)
+                switch (this.CurrentToken.tokenType)
                 {
                     case TokenType.LABEL:
-                        output.AppendFormat("{1} : {0}", label(), InstructionCounter);
+                        output.AppendFormat("{1} : {0}", this.label(), this.InstructionCounter);
                         output.AppendLine();
                         break;
 
@@ -209,13 +221,13 @@ namespace XIL.Assembler
                         break;
 
                     case TokenType.IDENT:
-                        output.AppendFormat("{1} : {0}", instruction(), InstructionCounter);
+                        output.AppendFormat("{1} : {0}", this.instruction(), this.InstructionCounter);
                         output.AppendLine();
-                        InstructionCounter++;
+                        this.InstructionCounter++;
                         break;
 
                     case TokenType.NEWLINE:
-                        Eat(TokenType.NEWLINE);
+                        this.Eat(TokenType.NEWLINE);
                         output.AppendLine();
                         break;
                 }
@@ -226,25 +238,25 @@ namespace XIL.Assembler
 
         public void ParseAllLabel()
         {
-            while (CurrentToken.tokenType != TokenType.EOF)
+            while (this.CurrentToken.tokenType != TokenType.EOF)
             {
-                switch (CurrentToken.tokenType)
+                switch (this.CurrentToken.tokenType)
                 {
                     case TokenType.LABEL:
-                        label();
+                        this.label();
                         break;
 
                     case TokenType.IDENT:
-                        while (CurrentToken.tokenType != TokenType.NEWLINE)
+                        while (this.CurrentToken.tokenType != TokenType.NEWLINE)
                         {
-                            Eat(TokenType.ANY);
+                            this.Eat(TokenType.ANY);
                         }
-                        Eat(TokenType.NEWLINE);
-                        InstructionCounter++;
+                        this.Eat(TokenType.NEWLINE);
+                        this.InstructionCounter++;
                         break;
 
                     case TokenType.NEWLINE:
-                        Eat(TokenType.NEWLINE);
+                        this.Eat(TokenType.NEWLINE);
                         break;
                 }
             }
@@ -252,13 +264,13 @@ namespace XIL.Assembler
 
         public string Parse()
         {
-            IsPrettyPrint = false;
-            ParseAllLabel();
-            Lexer.Reset();
-            IsPrettyPrint = true;
-            CurrentToken = Lexer.GetNextToken();
-            InstructionCounter = 0;
-            return XIL();
+            this.IsPrettyPrint = false;
+            this.ParseAllLabel();
+            this.Lexer.Reset();
+            this.IsPrettyPrint = true;
+            this.CurrentToken = this.Lexer.GetNextToken();
+            this.InstructionCounter = 0;
+            return this.XIL();
         }
     }
 }
