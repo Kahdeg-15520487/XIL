@@ -14,5 +14,5 @@ jobs:
     - run: ls /home/runner/work/XIL/XIL | echo
     - uses: rohith/publish-nuget@v1.2.0
       with:
-        project_dir: XIL
+        project_dir: XIL.csproj
         nuget_key: ${{secrets.XIL_NUGET}}
