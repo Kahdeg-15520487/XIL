@@ -6,7 +6,7 @@ using System.Text;
 using XIL.LangDef;
 using XIL.VM;
 
-namespace testconsole
+namespace XIL.StandardLibrary
 {
     public class IOInstruction : IInstructionImplementation
     {

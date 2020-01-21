@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>XIL.StandardLibrary</title>
+    <authors>Nguyễn Lê Minh</authors>
+    <owners>Nguyễn Lê Minh</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/Kahdeg-15520487/XIL</projectUrl>
+    <description>Standard library for XIL.</description>
+    <copyright>Copyright 2020</copyright>
+  </metadata>
+</package>

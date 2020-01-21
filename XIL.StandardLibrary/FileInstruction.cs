@@ -4,7 +4,7 @@ using System.IO;
 using XIL.LangDef;
 using XIL.VM;
 
-namespace testconsole
+namespace XIL.StandardLibrary
 {
     public class FileInstruction : IInstructionImplementation
     {

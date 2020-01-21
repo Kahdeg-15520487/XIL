@@ -7,6 +7,7 @@ using System.Reflection;
 using XIL.VM;
 using XIL.Assembler;
 using XIL.LangDef;
+using XIL.StandardLibrary;
 
 namespace testconsole
 {

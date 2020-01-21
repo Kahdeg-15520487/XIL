@@ -48,10 +48,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compile.cs" />
-    <Compile Include="DiagnosticInstruction.cs" />
-    <Compile Include="FileInstruction.cs" />
-    <Compile Include="ForeignFunctionInstruction.cs" />
-    <Compile Include="IOInstruction.cs" />
     <Compile Include="CILCompile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -66,6 +62,10 @@
     <ProjectReference Include="..\XIL-JIT\XIL-JIT.csproj">
       <Project>{c339a45b-d912-4fcc-8994-5879dc100545}</Project>
       <Name>XIL-JIT</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XIL.StandardLibrary\XIL.StandardLibrary.csproj">
+      <Project>{93b27663-a3f8-4072-be68-278fb967d778}</Project>
+      <Name>XIL.StandardLibrary</Name>
     </ProjectReference>
     <ProjectReference Include="..\XILPreprocessor\XILPreprocessor.csproj">
       <Project>{9743591E-6902-4288-96D7-399F8267ED05}</Project>

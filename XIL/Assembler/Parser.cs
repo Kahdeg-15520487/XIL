@@ -247,7 +247,8 @@ namespace XIL.Assembler
                         break;
 
                     case TokenType.IDENT:
-                        while (this.CurrentToken.tokenType != TokenType.NEWLINE)
+                        while (this.CurrentToken.tokenType != TokenType.NEWLINE
+                            && this.CurrentToken.tokenType != TokenType.EOF)
                         {
                             this.Eat(TokenType.ANY);
                         }

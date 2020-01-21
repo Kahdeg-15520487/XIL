@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>1.0.1</version>
+    <title>XIL</title>
+    <authors>Nguyễn Lê Minh</authors>
+    <owners>Nguyễn Lê Minh</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/Kahdeg-15520487/XIL</projectUrl>
+    <description>A simple framework for implementing a virtual machine.</description>
+    <copyright>Copyright 2020</copyright>
+  </metadata>
+</package>
