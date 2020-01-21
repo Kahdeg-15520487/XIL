@@ -13,5 +13,5 @@ jobs:
     steps:
     - uses: rohith/publish-nuget@v1.2.0
       with:
-        project_dir: ./XIL
+        project_dir: .
         nuget_key: ${{secrets.XIL_NUGET}}
