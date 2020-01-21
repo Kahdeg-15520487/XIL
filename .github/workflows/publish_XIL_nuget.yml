@@ -11,6 +11,7 @@ jobs:
     name: publish
     runs-on: [ubuntu-latest]
     steps:
+    - run: ls
     - uses: rohith/publish-nuget@v1.2.0
       with:
         project_dir: ../XIL/XIL.csproj
