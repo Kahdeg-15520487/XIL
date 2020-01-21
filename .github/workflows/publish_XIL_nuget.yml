@@ -11,7 +11,17 @@ jobs:
     name: publish
     runs-on: [ubuntu-latest]
     steps:
-    - run: ls /home/runner/work/XIL/XIL | echo
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2 # This must be >= 2 to compare commits
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.100
+    - name: Build
+      run: dotnet build
+    - name: Test
+      run: dotnet test
     - uses: rohith/publish-nuget@v1.2.0
       with:
         project_dir: XIL.csproj
