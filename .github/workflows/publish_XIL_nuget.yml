@@ -19,10 +19,8 @@ jobs:
       with:
         dotnet-version: 3.1.100
     - name: Build
-      run: dotnet build
-    - name: Test
-      run: dotnet test
+      run: dotnet build XIL/XIL.csproj
     - uses: rohith/publish-nuget@v1.2.0
       with:
-        project_dir: XIL.csproj
+        project_dir: XIL
         nuget_key: ${{secrets.XIL_NUGET}}
