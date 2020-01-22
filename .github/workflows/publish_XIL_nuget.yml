@@ -1,0 +1,27 @@
+name: Publish NuGet
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  publish:
+    name: publish
+    runs-on: [ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2 # This must be >= 2 to compare commits
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.100
+    - name: Build
+      run: dotnet build XIL/XIL.csproj
+    - uses: rohith/publish-nuget@v1.2.0
+      with:
+        project_dir: XIL
+        tag_format: v1.0.1
+        nuget_key: ${{secrets.XIL_NUGET}}
