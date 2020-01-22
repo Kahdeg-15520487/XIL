@@ -5,6 +5,9 @@ using XIL.Assembler.Preprocessor.AST;
 
 namespace XIL.Assembler.Preprocessor
 {
+    /// <summary>
+    /// Simple macro preprocessor
+    /// </summary>
     public class Preprocessor
     {
         public bool IsSuccess = true;
@@ -27,6 +30,12 @@ namespace XIL.Assembler.Preprocessor
                 return $"{Start}->{End} : {Macro}";
             }
         }
+
+        /// <summary>
+        /// Preprocess a string of text
+        /// </summary>
+        /// <param name="source">source</param>
+        /// <returns>preprocessed source</returns>
         public string Process(string source)
         {
             //search for #* macro *#
@@ -39,7 +48,7 @@ namespace XIL.Assembler.Preprocessor
                 int end = 0;
                 while (sr.Peek() != -1)
                 {
-                    var c = (char)sr.Read();
+                    char c = (char)sr.Read();
                     pos++;
 
                     if (c == '#' && sr.Peek() == '*')
@@ -73,36 +82,28 @@ namespace XIL.Assembler.Preprocessor
             string processedSource = source;
             Dictionary<string, int> variables = new Dictionary<string, int>();
             Interpreter interpreter = new Interpreter(variables);
-            foreach (var macro in macros)
+            foreach (MacroDefinition macro in macros)
             {
                 Lexer lexer = new Lexer(macro.Macro);
                 Parser parser = new Parser(lexer);
                 try
                 {
-                    var result = parser.Parse();
+                    ASTNode result = parser.Parse();
                     result.Accept(interpreter);
-                    var output = interpreter.Output;
+                    int output = interpreter.Output;
                     if (result is Assignment)
                     {
+                        Assignment asgm = result as Assignment;
 
-                        //ignore output
-                        var asgm = result as Assignment;
-                        //Console.WriteLine("{0} -> {1} = {2}", macro.Macro, asgm.ident.token.lexeme, output);
-
-                        //replace macro with empty space
-                        //processedSource.Replace()
                         processedSource = processedSource.Replace(macro.Start - 1, macro.End - macro.Start + 1, "");
                     }
                     else
                     {
-                        //Console.WriteLine("{0} -> {1}", macro.Macro, output);
-                        //replace macro with output
                         processedSource = processedSource.Replace(macro.Start - 1, macro.End - macro.Start + 1, output.ToString());
                     }
                 }
                 catch (Exception e)
                 {
-                    //Console.WriteLine(e.Message);
                     ErrorMessage = e.Message;
                     IsSuccess = false;
                 }

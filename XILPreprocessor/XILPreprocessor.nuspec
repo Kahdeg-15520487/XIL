@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>1.0.1</version>
-    <title>XIL.StandardLibrary</title>
+    <version>1.0.0</version>
+    <title>XIL.Assembler.Preprocessor</title>
     <authors>Nguyễn Lê Minh</authors>
     <owners>Nguyễn Lê Minh</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/Kahdeg-15520487/XIL</projectUrl>
-    <description>Standard library for XIL.</description>
+    <description>A simple string preprocessor.</description>
 	<dependencies>
 		<dependency id="XIL" version="1.0.1" />
 	</dependencies>
