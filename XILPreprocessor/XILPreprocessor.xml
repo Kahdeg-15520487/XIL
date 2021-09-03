@@ -40,5 +40,17 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:XIL.Assembler.Preprocessor.Preprocessor">
+            <summary>
+            Simple macro preprocessor
+            </summary>
+        </member>
+        <member name="M:XIL.Assembler.Preprocessor.Preprocessor.Process(System.String)">
+            <summary>
+            Preprocess a string of text
+            </summary>
+            <param name="source">source</param>
+            <returns>preprocessed source</returns>
+        </member>
     </members>
 </doc>

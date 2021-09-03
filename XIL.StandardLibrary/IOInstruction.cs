@@ -43,10 +43,7 @@ namespace XIL.StandardLibrary
         [Instruction(0x32, "prints", lib)]
         public void PrintString(Thread thread, int operand1, int operand2)
         {
-            int arraySize = thread.Pop();
-            int startIndex = thread.StackTopIndex - (arraySize - 1);
-            var result = Decode(thread.PopArray(startIndex, arraySize));
-            Console.WriteLine(result.ToString());
+            Console.WriteLine(Util.PopStringFromStack(thread));
         }
 
         /// <summary>
@@ -57,9 +54,7 @@ namespace XIL.StandardLibrary
         public void ReadString(Thread thread, int operand1, int operand2)
         {
             Console.Write("input string: ");
-            var result = Encode(Console.ReadLine());
-            thread.PushArray(result);
-            thread.Push(result.GetLength(0));
+            Util.PushStringToStack(thread, Console.ReadLine());
         }
 
         /// <summary>
@@ -95,52 +90,6 @@ namespace XIL.StandardLibrary
             {
                 thread.Push(temp[0]);
             }
-        }
-
-        /// <summary>
-        /// decode a int array to string
-        /// </summary>
-        /// <param name="a">the array to be decode</param>
-        /// <returns>decoded string</returns>
-        public static string Decode(int[] a)
-        {
-            StringBuilder result = new StringBuilder();
-            foreach (var b in a)
-            {
-                result.Append(Encoding.ASCII.GetString(BitConverter.GetBytes(b)));
-            }
-            return result.ToString();
-        }
-
-        /// <summary>
-        /// encode a string to its int-encoded array
-        /// </summary>
-        /// <param name="s">string to be encoded</param>
-        /// <returns>encoded array</returns>
-        public static int[] Encode(string s)
-        {
-            var strs = ChunksUpto(s, 4).ToArray();
-            int[] result = new int[strs.GetLength(0)];
-            int index = 0;
-            foreach (var str in strs)
-            {
-                var bytes = Encoding.ASCII.GetBytes(str);
-                result[index] = BitConverter.ToInt32(bytes, 0);
-                index++;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// chop string into <paramref name="maxChunkSize"/> sized string and will pad-right to make sure that the resulting substring always have that size
-        /// </summary>
-        /// <param name="str">the string to split</param>
-        /// <param name="maxChunkSize">the size of the substring</param>
-        /// <returns>the collection of splitted substring</returns>
-        private static IEnumerable<string> ChunksUpto(string str, int maxChunkSize)
-        {
-            for (int i = 0; i < str.Length; i += maxChunkSize)
-                yield return str.Substring(i, Math.Min(maxChunkSize, str.Length - i)).PadRight(maxChunkSize);
         }
     }
 }

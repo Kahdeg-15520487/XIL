@@ -169,10 +169,13 @@ namespace XIL.Assembler
         Token String()
         {
             string result = "";
+            char lastChar = '\0';
             Advance();
-            while (current_char != '\0' && current_char != '"')
+            while (current_char != '\0'
+               && (current_char != '"' || (current_char == '"' && lastChar == '\\')))
             {
                 result += current_char;
+                lastChar = current_char;
                 Advance();
             }
             if (current_char != '"')
@@ -180,7 +183,7 @@ namespace XIL.Assembler
                 Error();
             }
             Advance();
-            return new Token(TokenType.STRING, result);
+            return new Token(TokenType.STRING, result.Replace("\\\"", "\""));
         }
 
         public Token GetNextToken()

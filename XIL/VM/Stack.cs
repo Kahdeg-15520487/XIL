@@ -19,8 +19,7 @@ namespace XIL.VM
 
         public bool IsReadOnly => false;
 
-        public int this[int index]
-        {
+        public int this[int index] {
             get => stack[index];
             set { stack[index] = value; }
         }
@@ -56,7 +55,7 @@ namespace XIL.VM
             {
                 throw new InvalidOperationException("Stack Empty");
             }
-            return stack[Top-1];
+            return stack[Top - 1];
         }
 
         public void Set(int index, int value)
@@ -70,7 +69,7 @@ namespace XIL.VM
 
         public int Get(int index)
         {
-            if (index>Top)
+            if (index > Top)
             {
                 throw new IndexOutOfRangeException();
             }
@@ -90,20 +89,21 @@ namespace XIL.VM
             Top += arraySize;
         }
 
-        public int[] PopArray(int arrayIndex,int arraySize)
+        public int[] PopArray(int arrayIndex, int arraySize)
         {
             if (arrayIndex > Top)
             {
                 throw new IndexOutOfRangeException();
             }
 
-            if (arrayIndex + arraySize -1 > Top)
+            if (arrayIndex + arraySize - 1 > Top)
             {
                 throw new IndexOutOfRangeException();
             }
 
             int[] result = new int[arraySize];
             Array.Copy(stack, arrayIndex, result, 0, arraySize);
+            Top -= arraySize;
             return result;
         }
 
@@ -124,7 +124,7 @@ namespace XIL.VM
 
         public void Add(int item)
         {
-            
+
         }
 
         public bool Contains(int item)

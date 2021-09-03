@@ -113,23 +113,23 @@ namespace XILtoCIL
 
         public void EmitAssembly()
         {
-            AssemblyName assembly = new AssemblyName("DynamicAssembly");
-            AssemblyBuilder assemblyBuilder =
-                AppDomain.CurrentDomain.DefineDynamicAssembly(
-                    assembly,
-                    AssemblyBuilderAccess.Save);
-            ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule(assembly.Name, assembly.Name + ".exe");
-            TypeBuilder typeBuilder = moduleBuilder.DefineType("Program", TypeAttributes.Public);
-            typeBuilder.DefineField("", typeof(HostFunctionCollection), FieldAttributes.Static | FieldAttributes.Private);
-            //Type[] parameters = new Type[] { typeof(string[]) };
-            MethodBuilder methodBuilder = typeBuilder.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static, typeof(int), null);
-            ILGenerator ilgen = methodBuilder.GetILGenerator();
+            //AssemblyName assembly = new AssemblyName("DynamicAssembly");
+            //AssemblyBuilder assemblyBuilder =
+            //    AppDomain.CurrentDomain.DefineDynamicAssembly(
+            //        assembly,
+            //        AssemblyBuilderAccess.Save);
+            //ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule(assembly.Name, assembly.Name + ".exe");
+            //TypeBuilder typeBuilder = moduleBuilder.DefineType("Program", TypeAttributes.Public);
+            //typeBuilder.DefineField("aaaa", typeof(HostFunctionCollection), FieldAttributes.Static | FieldAttributes.Private);
+            ////Type[] parameters = new Type[] { typeof(string[]) };
+            //MethodBuilder methodBuilder = typeBuilder.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static, typeof(int), null);
+            //ILGenerator ilgen = methodBuilder.GetILGenerator();
 
-            this.EmitMethod(ilgen);
+            //this.EmitMethod(ilgen);
 
-            typeBuilder.CreateType();
-            assemblyBuilder.SetEntryPoint(methodBuilder.GetBaseDefinition(), PEFileKinds.ConsoleApplication);
-            assemblyBuilder.Save(assembly.Name + ".exe");
+            //typeBuilder.CreateType();
+            //assemblyBuilder.SetEntryPoint(methodBuilder.GetBaseDefinition(), PEFileKinds.ConsoleApplication);
+            //assemblyBuilder.Save(assembly.Name + ".exe");
         }
         public Func<int> EmitDynamicMethod()
         {

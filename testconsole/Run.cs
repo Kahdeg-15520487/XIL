@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+
 using XIL.VM;
 
 namespace testconsole
@@ -29,7 +30,8 @@ namespace testconsole
         //	return 0;
         //}
 
-        public static int run(string[] paths, int verbosity = (int)VirtualMachineVerboseLevel.RuntimeError)
+
+        public static int run(int verbosity = (int)VirtualMachineVerboseLevel.RuntimeError, params string[] paths)
         {
             Console.WriteLine("run {0}", string.Join(" ", paths));
             if (paths.GetLength(0) == 0)
@@ -55,7 +57,7 @@ namespace testconsole
             Stopwatch stopwatch = new Stopwatch();
             const float timeSlice = 10;
             var timer = new System.Timers.Timer(timeSlice);
-            timer.Elapsed += (o, e) => { Console.WriteLine("tick {0}", vm.Tick()); };
+            //timer.Elapsed += (o, e) => { Console.WriteLine("tick {0}", vm.Tick()); };
 
             stopwatch.Start();
             timer.Start();
@@ -80,5 +82,6 @@ namespace testconsole
                 return (instrs, strs);
             }
         }
+
     }
 }

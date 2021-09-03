@@ -54,17 +54,24 @@ namespace XIL.VM
         /// a list of instruction's implementation
         /// </summary>
         public static Dictionary<int, InstructionAction> InstructionMap = null;
+
+        /// <summary>
+        /// a list of instruction's metadata
+        /// </summary>
         public static Dictionary<int, InstructionAttribute> InstructionMetaDataMap = null;
 
         /// <summary>
         /// a list of loaded instruction library's name
         /// </summary>
         public static List<string> LoadedLibrary = null;
+
         /// <summary>
         /// random number generator
         /// </summary>
         public static Random RandomNumberGenerator = null;
+
         int currentThread = 0;
+
         /// <summary>
         /// exitcode of all thread
         /// </summary>

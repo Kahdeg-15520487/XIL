@@ -3,11 +3,17 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.CommandLine;
+using System.CommandLine.Invocation;
+
 
 using XIL.VM;
 using XIL.Assembler;
 using XIL.LangDef;
 using XIL.StandardLibrary;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using XIL.Assembler.Preprocessor;
 
 namespace testconsole
 {
@@ -19,48 +25,125 @@ namespace testconsole
         public static DiagnosticInstruction diagnosticInstruction = new DiagnosticInstruction();
         static string LOCAL_ROOT = AppDomain.CurrentDomain.BaseDirectory;
 
-        public static int run(CommandLineArguments arg) {
-            return CommandLine.Run<Run>(arg, "run");
+        //public static int run(CommandLineArguments arg)
+        //{
+        //    return CommandLine.Run<Run>(arg, "run");
+        //}
+
+        //public static int compile(CommandLineArguments arg)
+        //{
+        //    return CommandLine.Run<Compile>(arg, "compile");
+        //}
+
+        //public static int cil(CommandLineArguments arg)
+        //{
+        //    return CommandLine.Run<CILCompile>(arg, "compile");
+        //}
+
+        //public static int listlib(CommandLineArguments arg)
+        //{
+        //    return CommandLine.Run<ListLib>(arg, "listlib");
+        //}
+
+        public static void run(int verbosity, string path)
+        {
+            Run.run(verbosity, path);
         }
 
-        public static int compile(CommandLineArguments arg) {
-            return CommandLine.Run<Compile>(arg, "compile");
+        public static void compile(string path, string save)
+        {
+            Compile.compile(path, save);
         }
 
-        public static int cil(CommandLineArguments arg) {
-            return CommandLine.Run<CILCompile>(arg, "compile");
-        }
-
-        public static int help() {
+        public static int help()
+        {
             Console.WriteLine("help:");
             Console.WriteLine("compile <program.xil>");
             Console.WriteLine("run <program.xse>");
             Console.WriteLine("cil <program.xil>");
+            Console.WriteLine("listlib");
             return 0;
         }
 
-        private static string ReadLine(string prompt = "") {
+        private static string ReadLine(string prompt = "")
+        {
             Console.Write(prompt);
             return Console.ReadLine();
         }
 
-        static void HOST_print(Thread thread) {
+        static void HOST_print(Thread thread)
+        {
             var value = thread.Pop();
             Console.WriteLine(value);
         }
 
-        static int Main(string[] args) {
+        static async Task Main(string[] args)
+        {
             //test load from external assemblies IInstructionImplementation
             Libs = GetDirectoryPlugins<IInstructionImplementation>(LOCAL_ROOT);
-            foreach (var lib in Libs) {
+            foreach (var lib in Libs)
+            {
                 Console.WriteLine("Loaded {0}", lib.GetType().Name);
             }
 
             ForeignFunctionInstruction.InitForeignFunctionMap(("print", HOST_print));
 
-            var exitCode = CommandLine.Run<Program>(new CommandLineArguments(args), defaultCommandName: "help");
+            //var exitCode = CommandLine.Run<Program>(new CommandLineArguments(args), defaultCommandName: "help");
+
+            var runCmd = new Command("run")
+            {
+                new Argument<string>("path"),
+                new Option<int>("verbosity")
+            };
+            runCmd.Handler = CommandHandler.Create<int, string>(run);
+
+            var compileCmd = new Command("compile")
+            {
+                new Argument<string>("path"),
+                new Option<string>("saveas")
+            };
+            compileCmd.Handler = CommandHandler.Create<string, string>(compile);
+
+            var listlib = new Command("listlib")
+            {
+                Handler = CommandHandler.Create(ListLib.listlib)
+            };
+
+            var helpCmd = new Command("help")
+            {
+                Handler = CommandHandler.Create(help)
+            };
+
+            var root = new RootCommand("compile and run")
+            {
+                //runCmd,
+                //compileCmd,
+                //listlib,
+                //helpCmd,
+                new Argument<string>("path"),
+                new Option<int>(new[] {"verbosity", "v"})
+            };
+            root.Handler = CommandHandler.Create<string, int>((path, verbosity) =>
+             {
+                 if (File.Exists(path))
+                 {
+                     var ext = Path.GetExtension(path);
+                     if (ext == ".xil")
+                     {
+                         compile(path, null);
+                         run(verbosity, Path.ChangeExtension(path, "xse"));
+                     }
+                     else
+                     {
+                         run(verbosity, path);
+                     }
+                 }
+             });
+
+            await root.InvokeAsync(args);
+
             ReadLine("Press enter to exit...");
-            return exitCode;
+
 
             //test vm function
             //			VirtualMachine vm = new VirtualMachine(builtinInstruction, ioInstruction, diagnosticInstruction);
@@ -142,21 +225,27 @@ namespace testconsole
             //			Console.ReadLine();
         }
 
-        public static List<T> GetFilePlugins<T>(string filename) {
+        public static List<T> GetFilePlugins<T>(string filename)
+        {
             List<T> ret = new List<T>();
-            if (File.Exists(filename)) {
+            if (File.Exists(filename))
+            {
                 Type typeT = typeof(T);
                 Assembly assembly;
-                try {
+                try
+                {
                     assembly = Assembly.LoadFrom(filename);
                 }
-                catch {
+                catch
+                {
                     return ret;
                 }
-                foreach (Type type in assembly.GetTypes()) {
+                foreach (Type type in assembly.GetTypes())
+                {
                     if (!type.IsClass || type.IsNotPublic)
                         continue;
-                    if (typeT.IsAssignableFrom(type)) {
+                    if (typeT.IsAssignableFrom(type))
+                    {
                         T plugin = (T)Activator.CreateInstance(type);
                         ret.Add(plugin);
                     }
@@ -166,10 +255,12 @@ namespace testconsole
         }
 
 
-        public static List<T> GetDirectoryPlugins<T>(string dirname) {
+        public static List<T> GetDirectoryPlugins<T>(string dirname)
+        {
             List<T> ret = new List<T>();
             string[] dlls = Directory.EnumerateFiles(dirname).Where(x => x.EndsWith(".dll") || x.EndsWith(".exe")).ToArray();
-            foreach (string dll in dlls) {
+            foreach (string dll in dlls)
+            {
                 List<T> dll_plugins = GetFilePlugins<T>(Path.GetFullPath(dll));
                 ret.AddRange(dll_plugins);
             }

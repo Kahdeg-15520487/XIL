@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+
 using XIL.Assembler;
 using XIL.Assembler.Preprocessor;
 using XIL.LangDef;
@@ -13,6 +14,7 @@ namespace testconsole
     /// </summary>
     class Compile
     {
+
         public static int compile(string path = null, string save = null)
         {
             Console.WriteLine("compiling {0}", path is null ? "null" : path);
