@@ -79,6 +79,7 @@ namespace testconsole
 
         static async Task Main(string[] args)
         {
+            bool waitAfterRun = false;
             //test load from external assemblies IInstructionImplementation
             Libs = GetDirectoryPlugins<IInstructionImplementation>(LOCAL_ROOT);
             foreach (var lib in Libs)
@@ -124,25 +125,30 @@ namespace testconsole
                 new Option<int>(new[] {"verbosity", "v"})
             };
             root.Handler = CommandHandler.Create<string, int>((path, verbosity) =>
-             {
-                 if (File.Exists(path))
-                 {
-                     var ext = Path.GetExtension(path);
-                     if (ext == ".xil")
-                     {
-                         compile(path, null);
-                         run(verbosity, Path.ChangeExtension(path, "xse"));
-                     }
-                     else
-                     {
-                         run(verbosity, path);
-                     }
-                 }
-             });
+              {
+                  if (File.Exists(path))
+                  {
+                      var ext = Path.GetExtension(path);
+                      if (ext == ".xil")
+                      {
+                          compile(path, null);
+                          run(verbosity, Path.ChangeExtension(path, "xse"));
+                      }
+                      else
+                      {
+                          run(verbosity, path);
+                      }
+                  }
+
+                  waitAfterRun = verbosity != 0;
+              });
 
             await root.InvokeAsync(args);
 
-            ReadLine("Press enter to exit...");
+            if (waitAfterRun)
+            {
+                ReadLine("Press enter to exit...");
+            }
 
 
             //test vm function
