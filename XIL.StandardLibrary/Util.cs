@@ -8,7 +8,7 @@ using XIL.VM;
 
 namespace XIL.StandardLibrary
 {
-    static class Util
+    public static class Util
     {
         /// <summary>
         /// Push an object to stack

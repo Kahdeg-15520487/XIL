@@ -19,6 +19,7 @@ namespace XIL.StandardLibrary
         public void PushString(Thread thread, int operand1, int operand2)
         {
             Util.PushStringToStack(thread, thread.GetString(operand1));
+            thread.Grow(1);
         }
 
         /// <summary>

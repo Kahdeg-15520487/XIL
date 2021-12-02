@@ -285,6 +285,20 @@ namespace XIL.VM
         {
             this.stack.Clear();
         }
+
+        /// <summary>
+        /// grow the stack
+        /// </summary>
+        /// <param name="newSize">new stack size</param>
+        /// <returns>current stack size</returns>
+        public int Grow(int newSize)
+        {
+            if (this.stack.Size < newSize)
+            {
+                this.stack.Size = newSize;
+            }
+            return this.stack.Size;
+        }
         #endregion
 
         #region fstack interface

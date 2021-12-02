@@ -8,7 +8,16 @@ namespace XIL.VM
     internal class Stack : ICollection
     {
         int[] stack;
-        public readonly int Size;
+        private int _size;
+        public int Size {
+            get {
+                return _size;
+            }
+            set {
+                _size = value;
+                Array.Resize(ref stack, _size);
+            }
+        }
         public int Top { get; private set; }
 
         public int Count => Top;

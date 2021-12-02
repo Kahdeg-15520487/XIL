@@ -2,7 +2,7 @@
   "profiles": {
     "testconsole": {
       "commandName": "Project",
-      "commandLineArgs": "-v 2 .\\oauth.xil"
+      "commandLineArgs": "-v 2 .\\d1.xil"
     }
   }
 }
